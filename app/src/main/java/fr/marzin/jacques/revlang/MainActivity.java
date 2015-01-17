@@ -58,9 +58,7 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == fr.marzin.jacques.revlang.R.id.action_settings) {
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -108,6 +106,8 @@ public class MainActivity extends Activity {
     public void clickThemes(View view) {
         if (Oklangue()) {
             Intent intent = new Intent(this, ThemesActivity.class);
+            maJmSession.setThemeId(0);
+            maJmSession.setMotId(0);
             lanceActivite(intent);
         }
     }
@@ -116,6 +116,7 @@ public class MainActivity extends Activity {
         if (Oklangue()) {
             Intent intent = new Intent(this, MotsActivity.class);
             maJmSession.setThemeId(0);
+            maJmSession.setMotId(0);
             lanceActivite(intent);
         }
     }
@@ -123,6 +124,8 @@ public class MainActivity extends Activity {
     public void clickVerbes(View view) {
         if (Oklangue()) {
             Intent intent = new Intent(this, VerbesActivity.class);
+            maJmSession.setVerbeId(0);
+            maJmSession.setFormeId(0);
             lanceActivite(intent);
         }
     }
@@ -131,6 +134,7 @@ public class MainActivity extends Activity {
         if (Oklangue()) {
             Intent intent = new Intent(this, FormesActivity.class);
             maJmSession.setVerbeId(0);
+            maJmSession.setFormeId(0);
             lanceActivite(intent);
         }
     }

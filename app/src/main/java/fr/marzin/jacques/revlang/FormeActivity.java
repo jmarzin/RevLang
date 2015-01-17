@@ -118,8 +118,7 @@ public class FormeActivity extends Activity {
                 Intent intent = new Intent(getBaseContext(), FormesActivity.class);
                 startActivity(intent);
                 finish();
-            case fr.marzin.jacques.revlang.R.id.action_settings:
-                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

@@ -207,25 +207,21 @@ public class JmSession {
         this.liste = new ArrayList<Integer>();
     }
 
-    public void creerListe() {
+    public Cursor getCursor(String objets) {
         Timestamp date = new Timestamp(System.currentTimeMillis());
         date.setTime(date.getTime() -ageRev*24*3600000);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateRev = sdf.format(date);
         String table;
-        String id;
-        String poids;
         String cond1;
         String cond2 = "";
         String cond3 = "";
         String cond4 = "";
         String cond5 = "";
-        String [] projection = new String[2];
-        if (modeRevision == "Vocabulaire") {
+        String [] projection = new String[3];
+        if (objets == "Mots") {
             table = MotContract.MotTable.TABLE_NAME;
-            id = MotContract.MotTable.COLUMN_NAME_ID;
-            poids = MotContract.MotTable.COLUMN_NAME_POIDS;
-            cond1 = MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"";
+            cond1 = MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2).toLowerCase() + "\"";
             if (ageRev != 0) {
                 cond2 = " AND " + MotContract.MotTable.COLUMN_NAME_DATE_REV + " <= \"" + dateRev + "\"";
             }
@@ -237,8 +233,10 @@ public class JmSession {
             }
             if (listeThemes.length > 1) {
                 cond5 = " AND " + MotContract.MotTable.COLUMN_NAME_THEME_ID + " IN (";
-                for (int i=0 ; i < listeThemes.length ; i++) {
-                    if (i != 0) {cond5 += ",";}
+                for (int i = 0; i < listeThemes.length; i++) {
+                    if (i != 0) {
+                        cond5 += ",";
+                    }
                     cond5 += listeThemes[i];
                 }
                 cond5 += ")";
@@ -247,10 +245,9 @@ public class JmSession {
             }
             projection[0] = MotContract.MotTable.COLUMN_NAME_ID;
             projection[1] = MotContract.MotTable.COLUMN_NAME_POIDS;
+            projection[2] = MotContract.MotTable.COLUMN_NAME_FRANCAIS;
         } else {
             table = FormeContract.FormeTable.TABLE_NAME;
-            id = FormeContract.FormeTable.COLUMN_NAME_ID;
-            poids = FormeContract.FormeTable.COLUMN_NAME_POIDS;
             cond1 = FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"";
             if (ageRev != 0) {
                 cond2 = " AND " + FormeContract.FormeTable.COLUMN_NAME_DATE_REV + " <= \"" + dateRev + "\"";
@@ -271,17 +268,36 @@ public class JmSession {
             }
             projection[0] = FormeContract.FormeTable.COLUMN_NAME_ID;
             projection[1] = FormeContract.FormeTable.COLUMN_NAME_POIDS;
+            projection[2] = FormeContract.FormeTable.COLUMN_NAME_LANGUE;
         }
         String selection = cond1 + cond2 + cond3 + cond4 + cond5;
         Cursor c = db.query(
-                table,  // The table to query
-                projection,                               // The columns to return
-                selection,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                null                                      // The sort order
+                table,
+                projection,
+                selection,
+                null,
+                null,
+                null,
+                null
         );
+        return c;
+    }
+
+    public void creerListe() {
+
+        String id;
+        String poids;
+        String [] projection = new String[2];
+        Cursor c;
+        if (modeRevision == "Vocabulaire") {
+            id = MotContract.MotTable.COLUMN_NAME_ID;
+            poids = MotContract.MotTable.COLUMN_NAME_POIDS;
+            c = getCursor ("Mots");
+        } else {
+            id = FormeContract.FormeTable.COLUMN_NAME_ID;
+            poids = FormeContract.FormeTable.COLUMN_NAME_POIDS;
+            c = getCursor("Formes");
+        }
         liste = new ArrayList<Integer>();
         for (int i = 0 ; i < c.getCount() ; i++) {
             c.moveToNext();

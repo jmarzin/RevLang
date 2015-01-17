@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "fr.marzin.jacques.revlangues"
+        applicationId "fr.marzin.jacques.revlang"
         minSdkVersion 17
         targetSdkVersion 21
         versionCode 1

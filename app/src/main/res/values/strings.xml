@@ -3,7 +3,13 @@
 
     <string name="app_name">RevLang</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_themes">Thèmes</string>
+    <string name="action_mots">Mots</string>
+    <string name="action_verbes">Verbes</string>
+    <string name="action_formes">Formes</string>
+    <string name="action_revision">Révision</string>
+    <string name="action_parametrage">Paramétrage</string>
+    <string name="action_quitter">Quitter</string>
     <string name="themes">Thèmes</string>
     <string name="mots">Mots</string>
     <string name="verbes">Verbes</string>

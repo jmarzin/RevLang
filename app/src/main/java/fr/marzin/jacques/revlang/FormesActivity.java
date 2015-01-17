@@ -38,23 +38,24 @@ public class FormesActivity extends Activity {
         this.setTitle("Formes verbales");
         int verbe_id = maJmSession.getVerbeId();
         String cond2;
+        final Cursor mCursor;
         if (verbe_id > 0) {
             cond2 = " AND " + FormeContract.FormeTable.COLUMN_NAME_VERBE_ID + " = " + verbe_id;
+            SQLiteDatabase db = maJmSession.getDb();
+            mCursor = db.rawQuery("select F._id, F.langue, V.langue as verbe from formes as F JOIN verbes as V ON F.verbe_id=V._id where F." +
+                    FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2).toLowerCase() + "\"" + cond2 +
+                    " ORDER BY V." + VerbeContract.VerbeTable.COLUMN_NAME_LANGUE + " ASC , F." +
+                    FormeContract.FormeTable.COLUMN_NAME_FORME_ID + " ASC", null);
         } else {
-            cond2 = "";
+            mCursor = maJmSession.getCursor("Formes");
         }
-        SQLiteDatabase db = maJmSession.getDb();
-        final Cursor mCursor = db.rawQuery("select F._id, F.langue, V.langue as verbe from formes as F JOIN verbes as V ON F.verbe_id=V._id where F."+
-                FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"" + cond2 +
-                " ORDER BY V." + VerbeContract.VerbeTable.COLUMN_NAME_LANGUE + " ASC , F." +
-                FormeContract.FormeTable.COLUMN_NAME_FORME_ID + " ASC",null);
         ListAdapter adapter = new SimpleCursorAdapter(
-                this,
-                android.R.layout.simple_list_item_1,
-                mCursor,
-                new String[] {FormeContract.FormeTable.COLUMN_NAME_LANGUE},
-                new int[] {android.R.id.text1},
-                0);
+            this,
+            android.R.layout.simple_list_item_1,
+            mCursor,
+            new String[] {FormeContract.FormeTable.COLUMN_NAME_LANGUE},
+            new int[] {android.R.id.text1},
+            0);
 
         ListView listView = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.listView2);
         listView.setAdapter(adapter);
@@ -96,18 +97,48 @@ public class FormesActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        Intent intent;
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 if (maJmSession.getVerbeId() > 0) {
-                    Intent intent = new Intent(getBaseContext(), VerbesActivity.class);
+                    intent = new Intent(getBaseContext(), VerbesActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
                     NavUtils.navigateUpFromSameTask(this);
                 }
                 return true;
-            case fr.marzin.jacques.revlang.R.id.action_settings:
+            case fr.marzin.jacques.revlang.R.id.action_themes:
+                intent = new Intent(this, ThemesActivity.class);
+                maJmSession.setThemeId(0);
+                maJmSession.setMotId(0);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_mots:
+                intent = new Intent(this, MotsActivity.class);
+                maJmSession.setThemeId(0);
+                maJmSession.setMotId(0);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_verbes:
+                intent = new Intent(this, VerbesActivity.class);
+                maJmSession.setVerbeId(0);
+                maJmSession.setFormeId(0);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_revision:
+                intent = new Intent(this, RevisionActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_parametrage:
+                intent = new Intent(this, ParametrageActivity.class);
+                startActivity(intent);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

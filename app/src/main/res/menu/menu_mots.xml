@@ -2,6 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="fr.marzin.jacques.revlang.MotsActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <item android:id="@+id/action_themes" android:title="@string/action_themes"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_verbes" android:title="@string/action_verbes"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_formes" android:title="@string/action_formes"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_revision" android:title="@string/action_revision"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_parametrage" android:title="@string/action_parametrage"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>
