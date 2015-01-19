@@ -18,11 +18,6 @@ public class FormeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_forme);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         maJmSession = new JmSession(null,getBaseContext());
         String langue = maJmSession.getLangue();
         if (langue.equals("Italien")) {
@@ -49,7 +44,6 @@ public class FormeActivity extends Activity {
             String langue_id = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID));
             TextView t_langue_id = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue_id);
             t_langue_id.setText(langue_id);
-
             int verbe_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_VERBE_ID));
             final Cursor vCursor = db.rawQuery("select langue from verbes where _id = " + verbe_id,null);
             String verbe_langue;
@@ -61,7 +55,6 @@ public class FormeActivity extends Activity {
             vCursor.close();
             TextView t_verbe_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_verbe_langue);
             t_verbe_langue.setText(verbe_langue);
-
             int mforme_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_FORME_ID));
             TextView t_forme = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_forme);
             t_forme.setText(JmSession.forme_ids.get(langue)[mforme_id - 1][0]);
@@ -90,7 +83,12 @@ public class FormeActivity extends Activity {
             t_date_maj.setText(date_maj);
             mCursor.close();
         }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        maJmSession = new JmSession(null,getBaseContext());
     }
 
     @Override
@@ -99,26 +97,19 @@ public class FormeActivity extends Activity {
         super.onPause();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(fr.marzin.jacques.revlang.R.menu.menu_forme, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         Intent intent;
         switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                intent = new Intent(getBaseContext(), FormesActivity.class);
-                startActivity(intent);
                 finish();
+                return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
                 maJmSession.setThemeId(0);

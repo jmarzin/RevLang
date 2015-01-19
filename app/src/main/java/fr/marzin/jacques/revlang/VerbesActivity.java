@@ -23,11 +23,6 @@ public class VerbesActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_verbes);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         maJmSession = new JmSession(null,getBaseContext());
         String langue = maJmSession.getLangue();
         if (langue.equals("Italien")) {
@@ -56,28 +51,24 @@ public class VerbesActivity extends Activity {
                 new String[] {VerbeContract.VerbeTable.COLUMN_NAME_LANGUE},
                 new int[] {android.R.id.text1},
                 0);  // Parallel array of which template objects to bind to those columns.
-
-        // Bind to our new adapter.
         ListView listView = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.listView);
         listView.setAdapter(adapter);
-        if (maJmSession.getVerbeId() > 0) {
-            listView.setSelection(maJmSession.getVerbePos());
-            maJmSession.setVerbeId(0);
-        }
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
                 mCursor.moveToPosition(pos);
-                maJmSession.setVerbePos(pos);
                 int rowId = mCursor.getInt(mCursor.getColumnIndexOrThrow("_id"));
-                mCursor.close();
                 maJmSession.setVerbeId(rowId);
                 Intent intent = new Intent(getBaseContext(), FormesActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        maJmSession = new JmSession(null,getBaseContext());
     }
 
     @Override
@@ -85,18 +76,15 @@ public class VerbesActivity extends Activity {
         maJmSession.save();
         super.onPause();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(fr.marzin.jacques.revlang.R.menu.menu_verbes, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         Intent intent;
         switch (item.getItemId()) {
             case android.R.id.home:

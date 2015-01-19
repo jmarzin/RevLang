@@ -23,11 +23,6 @@ public class ThemesActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_themes);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         maJmSession = new JmSession(null,getBaseContext());
         String langue = maJmSession.getLangue();
         if (langue.equals("Italien")) {
@@ -56,29 +51,24 @@ public class ThemesActivity extends Activity {
                 new String[] {ThemeContract.ThemeTable.COLUMN_NAME_NUMERO,ThemeContract.ThemeTable.COLUMN_NAME_LANGUE},
                 new int[] {fr.marzin.jacques.revlang.R.id.text1, fr.marzin.jacques.revlang.R.id.text2},
                 0);  // Parallel array of which template objects to bind to those columns.
-
-        // Bind to our new adapter.
         ListView listView = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.listView);
         listView.setAdapter(adapter);
-        if (maJmSession.getThemeId() > 0) {
-            listView.setSelection(maJmSession.getThemePos());
-            maJmSession.setThemeId(0);
-        }
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
                 mCursor.moveToPosition(pos);
-                maJmSession.setThemePos(pos);
                 int rowId = mCursor.getInt(mCursor.getColumnIndexOrThrow("_id"));
-                mCursor.close();
                 maJmSession.setThemeId(rowId);
                 Intent intent = new Intent(getBaseContext(), MotsActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        maJmSession = new JmSession(null,getBaseContext());
     }
 
     @Override
@@ -89,19 +79,14 @@ public class ThemesActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(fr.marzin.jacques.revlang.R.menu.menu_themes, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         Intent intent;
         switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 finish();

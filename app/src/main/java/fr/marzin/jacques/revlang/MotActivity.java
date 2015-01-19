@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -19,11 +20,6 @@ public class MotActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_mot);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         maJmSession = new JmSession(null,getBaseContext());
         String langue = maJmSession.getLangue();
         if (langue.equals("Italien")) {
@@ -50,7 +46,6 @@ public class MotActivity extends Activity {
             String langue_id = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE_ID));
             TextView t_langue_id = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue_id);
             t_langue_id.setText(langue_id);
-
             int theme_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_THEME_ID));
             final Cursor vCursor = db.rawQuery("select langue from themes where _id = " + theme_id,null);
             String theme_langue;
@@ -62,7 +57,6 @@ public class MotActivity extends Activity {
             vCursor.close();
             TextView t_theme_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_theme_langue);
             t_theme_langue.setText(theme_langue);
-
             String francais = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_FRANCAIS));
             TextView t_francais = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_francais);
             t_francais.setText(francais);
@@ -94,7 +88,12 @@ public class MotActivity extends Activity {
             t_date_maj.setText(date_maj);
             mCursor.close();
         }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        maJmSession = new JmSession(null,getBaseContext());
     }
 
     @Override
@@ -105,24 +104,17 @@ public class MotActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(fr.marzin.jacques.revlang.R.menu.menu_mot, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         Intent intent;
         switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
             case android.R.id.home:
-//                moveTaskToBack(true);
-//                UiDevice.resetWatcherTriggers ();
-//                UiDevice.pressBack();
-                this.finish();
+                finish();
+                return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
                 maJmSession.setThemeId(0);

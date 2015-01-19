@@ -56,7 +56,6 @@ public class FormesActivity extends Activity {
             new String[] {FormeContract.FormeTable.COLUMN_NAME_LANGUE},
             new int[] {android.R.id.text1},
             0);
-
         ListView listView = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.listView2);
         listView.setAdapter(adapter);
         if (maJmSession.getFormeId() > 0) {
@@ -66,15 +65,11 @@ public class FormesActivity extends Activity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
                 mCursor.moveToPosition(pos);
-                maJmSession.setFormePos(pos);
                 int rowId = mCursor.getInt(mCursor.getColumnIndexOrThrow("_id"));
-                mCursor.close();
                 maJmSession.setFormeId(rowId);
                 Intent intent = new Intent(getBaseContext(), FormeActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
     }
@@ -87,27 +82,17 @@ public class FormesActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(fr.marzin.jacques.revlang.R.menu.menu_formes, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         Intent intent;
         switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if (maJmSession.getVerbeId() > 0) {
-                    intent = new Intent(getBaseContext(), VerbesActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    NavUtils.navigateUpFromSameTask(this);
-                }
+                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);

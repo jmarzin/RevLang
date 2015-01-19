@@ -25,6 +25,7 @@
         <activity
             android:name=".MotsActivity"
             android:label="@string/title_activity_mots"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -33,6 +34,7 @@
         <activity
             android:name=".VerbesActivity"
             android:label="@string/title_activity_verbes"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -41,6 +43,7 @@
         <activity
             android:name=".FormesActivity"
             android:label="@string/title_activity_formes"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -49,6 +52,7 @@
         <activity
             android:name=".RevisionActivity"
             android:label="@string/title_activity_revision"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -57,6 +61,7 @@
         <activity
             android:name=".ParametrageActivity"
             android:label="@string/title_activity_parametrage"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -77,6 +82,7 @@
         <activity
             android:name=".ThemesActivity"
             android:label="@string/title_activity_themes"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
