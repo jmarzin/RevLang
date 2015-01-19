@@ -120,7 +120,8 @@
         android:layout_height="wrap_content"
         android:text="@string/conserveStats"
         android:id="@+id/t_conserveStats"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:onClick="onChangeConserveStats" />
 
     <RadioGroup
         android:layout_width="match_parent"

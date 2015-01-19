@@ -171,7 +171,7 @@ public class RevisionActivity extends Activity {
             int nouveauPoids;
             EditText mReponse = (EditText) findViewById(fr.marzin.jacques.revlang.R.id.reponse);
             maJmSession.setNbQuestions(maJmSession.getNbQuestions() + 1);
-            if (mReponse.getText().toString().toLowerCase().equals(question.get("reponse").toString().toLowerCase())) {
+            if (egalite(mReponse.getText().toString(),question.get("reponse").toString())) {
                 TextView mBravo = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.bravoOuEchec);
                 mBravo.setText("Bravo !");
                 mBravo.setTextColor(0xFE04CB05);
@@ -187,11 +187,32 @@ public class RevisionActivity extends Activity {
                 nouveauPoids = maJmSession.augmente(question);
             }
             texte += " (" + nouveauPoids + ")";
-            mtexteReponse.setText(texte);
+            mtexteReponse.setText(eclate(texte));
             mBouton.setText("Autre question");
             ajusteSousTitre();
         } else {
             poseQuestion();
         }
+    }
+
+    private boolean egalite(String reponse, String reponse_attendue) {
+        reponse = reponse.toLowerCase();
+        reponse_attendue = reponse_attendue.toLowerCase();
+        for (String retval: reponse_attendue.split("/")){
+            if (retval.equals(reponse)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String eclate(String texte) {
+        String texte_eclate;
+        String[] tableau = texte.split("/");
+        texte_eclate = tableau[0];
+        for (int i=1 ; i < tableau.length ; i++) {
+            texte_eclate += " o\n"+tableau[i];
+        }
+        return texte_eclate;
     }
 }

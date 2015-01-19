@@ -289,7 +289,7 @@ public class JmSession {
         String poids;
         String [] projection = new String[2];
         Cursor c;
-        if (modeRevision == "Vocabulaire") {
+        if (modeRevision.equals("Vocabulaire")) {
             id = MotContract.MotTable.COLUMN_NAME_ID;
             poids = MotContract.MotTable.COLUMN_NAME_POIDS;
             c = getCursor ("Mots");
@@ -401,21 +401,71 @@ public class JmSession {
         }
     }
 
-    private void ajusteMot(int id, int poids, int erreurs) {
+    private void ajusteObjet (int id, int poids, int erreurs) {
         ContentValues values = new ContentValues();
-        values.put(MotContract.MotTable.COLUMN_NAME_POIDS, poids);
-        values.put(MotContract.MotTable.COLUMN_NAME_NB_ERR,erreurs);
         Timestamp date = new Timestamp(System.currentTimeMillis());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateRev = sdf.format(date);
-        values.put(MotContract.MotTable.COLUMN_NAME_DATE_REV,dateRev);
-        String selection = MotContract.MotTable.COLUMN_NAME_ID + " = " + id;
+        String colonne_id;
+        String colonne_poids;
+        String colonne_nberreurs;
+        String colonne_date_rev;
+        String nom_table;
+        if (modeRevision.equals("Vocabulaire")) {
+            nom_table = MotContract.MotTable.TABLE_NAME;
+            colonne_id = MotContract.MotTable.COLUMN_NAME_ID;
+            colonne_poids = MotContract.MotTable.COLUMN_NAME_POIDS;
+            colonne_nberreurs = MotContract.MotTable.COLUMN_NAME_NB_ERR;
+            colonne_date_rev = MotContract.MotTable.COLUMN_NAME_DATE_REV;
+        } else {
+            nom_table = FormeContract.FormeTable.TABLE_NAME;
+            colonne_id = FormeContract.FormeTable.COLUMN_NAME_ID;
+            colonne_poids = FormeContract.FormeTable.COLUMN_NAME_POIDS;
+            colonne_nberreurs = FormeContract.FormeTable.COLUMN_NAME_NB_ERR;
+            colonne_date_rev = FormeContract.FormeTable.COLUMN_NAME_DATE_REV;
+        }
+        values.put(colonne_poids, poids);
+        values.put(colonne_nberreurs,erreurs);
+        values.put(colonne_date_rev,dateRev);
+        String selection = colonne_id + " = " + id;
         int count = db.update(
-                MotContract.MotTable.TABLE_NAME,
+                nom_table,
                 values,
                 selection,
                 null);
     }
+
+//    private void ajusteMot(int id, int poids, int erreurs) {
+//        ContentValues values = new ContentValues();
+//        values.put(MotContract.MotTable.COLUMN_NAME_POIDS, poids);
+//        values.put(MotContract.MotTable.COLUMN_NAME_NB_ERR,erreurs);
+//        Timestamp date = new Timestamp(System.currentTimeMillis());
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        String dateRev = sdf.format(date);
+//        values.put(MotContract.MotTable.COLUMN_NAME_DATE_REV,dateRev);
+//        String selection = MotContract.MotTable.COLUMN_NAME_ID + " = " + id;
+//        int count = db.update(
+//                MotContract.MotTable.TABLE_NAME,
+//                values,
+//                selection,
+//                null);
+//    }
+
+//    private void ajusteForme(int id, int poids, int erreurs) {
+//        ContentValues values = new ContentValues();
+//        values.put(FormeContract.FormeTable.COLUMN_NAME_POIDS, poids);
+//        values.put(FormeContract.FormeTable.COLUMN_NAME_NB_ERR,erreurs);
+//        Timestamp date = new Timestamp(System.currentTimeMillis());
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        String dateRev = sdf.format(date);
+//        values.put(FormeContract.FormeTable.COLUMN_NAME_DATE_REV,dateRev);
+//        String selection = FormeContract.FormeTable.COLUMN_NAME_ID + " = " + id;
+//        int count = db.update(
+//                FormeContract.FormeTable.TABLE_NAME,
+//                values,
+//                selection,
+//                null);
+//    }
 
     public int reduit(Hashtable question) {
         int id = (int) question.get("id");
@@ -436,7 +486,12 @@ public class JmSession {
         if (errMin > 0 && erreurs > 0) {
             erreurs -= 1;
         }
-        ajusteMot(id,nouveauPoids,erreurs);
+//        if (modeRevision.equals("Vocabulaire")) {
+//            ajusteMot(id, nouveauPoids, erreurs);
+//        } else {
+//            ajusteForme(id,nouveauPoids, erreurs);
+//        }
+        ajusteObjet(id, nouveauPoids, erreurs);
         return nouveauPoids;
     }
 
@@ -450,7 +505,12 @@ public class JmSession {
             liste.add(id);
         }
         erreurs += 1;
-        ajusteMot(id,nouveauPoids,erreurs);
+//        if (modeRevision.equals("Vocabulaire")) {
+//            ajusteMot(id, nouveauPoids, erreurs);
+//        } else {
+//            ajusteForme(id, nouveauPoids, erreurs);
+//        }
+        ajusteObjet(id, nouveauPoids, erreurs);
         return nouveauPoids;
     }
 

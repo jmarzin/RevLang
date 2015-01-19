@@ -72,6 +72,7 @@ public class ParametrageActivity extends Activity {
         } else {
             mRadioConjugaisons.setChecked(true);
         }
+
         onChangeChoix(mRadioVocabulaire);
         Hashtable hThemes = maJmSession.getListeTousThemes();
         Hashtable hVerbes = maJmSession.getListeTousVerbes();
@@ -165,10 +166,6 @@ public class ParametrageActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void afficheListe() {
-
-    }
-
     public void onChangeChoix(View view) {
         mRadioVocabulaire = (RadioButton) findViewById(fr.marzin.jacques.revlang.R.id.t_vocabulaire);
         mLayoutThemes = (LinearLayout) findViewById(fr.marzin.jacques.revlang.R.id.layout_themes);
@@ -182,15 +179,18 @@ public class ParametrageActivity extends Activity {
         }
     }
 
-    public void onPrepareListe(View view) {
-        maJmSession.setPoidsMin(Integer.parseInt(mt_poidsMin.getText().toString()));
-        maJmSession.setAgeRev(Integer.parseInt(mt_ageMin.getText().toString()));
-        maJmSession.setErrMin(Integer.parseInt(mt_errMin.getText().toString()));
+    public void onChangeConserveStats(View view) {
         if (mt_conserveStats.isChecked()) {
             maJmSession.setConserveStats(1);
         } else {
             maJmSession.setConserveStats(0);
         }
+    }
+
+    public void onPrepareListe(View view) {
+        maJmSession.setPoidsMin(Integer.parseInt(mt_poidsMin.getText().toString()));
+        maJmSession.setAgeRev(Integer.parseInt(mt_ageMin.getText().toString()));
+        maJmSession.setErrMin(Integer.parseInt(mt_errMin.getText().toString()));
         if (mRadioVocabulaire.isChecked()) {
             maJmSession.setModeRevision("Vocabulaire");
         } else {

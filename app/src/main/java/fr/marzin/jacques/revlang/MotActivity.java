@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 
+
 public class MotActivity extends Activity {
 
     public JmSession maJmSession;
@@ -114,13 +115,45 @@ public class MotActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        Intent intent;
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                Intent intent = new Intent(getBaseContext(), MotsActivity.class);
+//                moveTaskToBack(true);
+//                UiDevice.resetWatcherTriggers ();
+//                UiDevice.pressBack();
+                this.finish();
+            case fr.marzin.jacques.revlang.R.id.action_themes:
+                intent = new Intent(this, ThemesActivity.class);
+                maJmSession.setThemeId(0);
+                maJmSession.setMotId(0);
                 startActivity(intent);
                 finish();
-
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_verbes:
+                intent = new Intent(this, VerbesActivity.class);
+                maJmSession.setVerbeId(0);
+                maJmSession.setFormeId(0);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_formes:
+                intent = new Intent(this, FormesActivity.class);
+                maJmSession.setVerbeId(0);
+                maJmSession.setFormeId(0);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_revision:
+                intent = new Intent(this, RevisionActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_parametrage:
+                intent = new Intent(this, ParametrageActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

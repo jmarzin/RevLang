@@ -207,7 +207,7 @@ public class MiseAJour extends IntentService {
             int numero = mCursor.getInt(mCursor.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_NUMERO));
             String texte = mCursor.getString(mCursor.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE));
             ContentValues values = new ContentValues();
-            if (numero != categorie.getInt(1) || texte != categorie.getString(2)) {
+            if (numero != categorie.getInt(1) || !texte.equals(categorie.getString(2))) {
                 nombreMaj += 1;
                 values.put(ThemeContract.ThemeTable.COLUMN_NAME_NUMERO, categorie.getInt(1));
                 values.put(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE, categorie.getString(2));
@@ -265,14 +265,14 @@ public class MiseAJour extends IntentService {
             String en_langue = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE));
             String prononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_PRONONCIATION));
             ContentValues values = new ContentValues();
-            if (francais != mot.getString(2) || mot_directeur != mot.getString(3) || en_langue != mot.getString(4)) {
+            if (!francais.equals(mot.getString(2)) || !mot_directeur.equals(mot.getString(3)) || !en_langue.equals(mot.getString(4))) {
                 nombreMaj += 1;
                 values.put(MotContract.MotTable.COLUMN_NAME_FRANCAIS, mot.getString(2));
                 values.put(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR, mot.getString(3));
                 values.put(MotContract.MotTable.COLUMN_NAME_LANGUE, mot.getString(4));
             } else if (mot.length() == 6) {
                 values.put(MotContract.MotTable.COLUMN_NAME_PRONONCIATION, "");
-            } else if (prononciation != mot.getString(5)) {
+            } else if (!prononciation.equals(mot.getString(5))) {
                 nombreMaj += 1;
                 values.put(MotContract.MotTable.COLUMN_NAME_PRONONCIATION,mot.getString(5));
             }
@@ -332,8 +332,8 @@ public class MiseAJour extends IntentService {
         JSONArray tableFormes = new JSONArray(reponse);
         int nombreFormes = tableFormes.length();
         for (int i=0 ; i < nombreFormes ; i++) {
-            JSONArray mot = tableFormes.optJSONArray(i);
-            majForme(mot,(int) tableId.get(mot.getInt(1)));
+            JSONArray forme = tableFormes.optJSONArray(i);
+            majForme(forme,(int) tableId.get(forme.getInt(1)));
         }
         db.execSQL("DELETE FROM " + VerbeContract.VerbeTable.TABLE_NAME +
                 " WHERE " + VerbeContract.VerbeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2) + "\" AND " +
@@ -376,7 +376,7 @@ public class MiseAJour extends IntentService {
             id = mCursor.getInt(mCursor.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_ID));
             String en_langue = mCursor.getString(mCursor.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_LANGUE));
             ContentValues values = new ContentValues();
-            if (en_langue != verbe.getString(1)) {
+            if (!en_langue.equals(verbe.getString(1))) {
                 nombreMaj += 1;
                 values.put(VerbeContract.VerbeTable.COLUMN_NAME_LANGUE, verbe.getString(1));
             }
@@ -432,13 +432,13 @@ public class MiseAJour extends IntentService {
             String prononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION));
             String en_langue = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_LANGUE));
             ContentValues values = new ContentValues();
-            if (forme_id != forme.getInt(2) || en_langue != forme.getString(3)) {
+            if (forme_id != forme.getInt(2) || !en_langue.equals(forme.getString(3))) {
                 nombreMaj += 1;
                 values.put(FormeContract.FormeTable.COLUMN_NAME_FORME_ID, forme.getString(2));
                 values.put(FormeContract.FormeTable.COLUMN_NAME_LANGUE, forme.getString(3));
             } else if (forme.length() == 5) {
                 values.put(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION, "");
-            } else if (prononciation != forme.getString(4)) {
+            } else if (!prononciation.equals(forme.getString(4))) {
                 nombreMaj += 1;
                 values.put(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION, forme.getString(4));
             }

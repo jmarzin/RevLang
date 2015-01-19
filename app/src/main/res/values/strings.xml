@@ -3,6 +3,8 @@
 
     <string name="app_name">RevLang</string>
     <string name="hello_world">Hello world!</string>
+    <string name="action_search"></string>
+    <string name="search_hint">% et _ utilisables</string>
     <string name="action_themes">Thèmes</string>
     <string name="action_mots">Mots</string>
     <string name="action_verbes">Verbes</string>
@@ -63,5 +65,7 @@
     <string name="title_activity_forme">FormeActivity</string>
     <string name="l_verbe_id">Verbe</string>
     <string name="l_forme_id">Forme</string>
+    <string name="title_activity_search_results">searchResultsActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

@@ -112,13 +112,44 @@ public class FormeActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        Intent intent;
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                Intent intent = new Intent(getBaseContext(), FormesActivity.class);
+                intent = new Intent(getBaseContext(), FormesActivity.class);
                 startActivity(intent);
                 finish();
-
+            case fr.marzin.jacques.revlang.R.id.action_themes:
+                intent = new Intent(this, ThemesActivity.class);
+                maJmSession.setThemeId(0);
+                maJmSession.setMotId(0);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_mots:
+                intent = new Intent(this, MotsActivity.class);
+                maJmSession.setThemeId(0);
+                maJmSession.setMotId(0);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_verbes:
+                intent = new Intent(this, VerbesActivity.class);
+                maJmSession.setVerbeId(0);
+                maJmSession.setFormeId(0);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_revision:
+                intent = new Intent(this, RevisionActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_parametrage:
+                intent = new Intent(this, ParametrageActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
