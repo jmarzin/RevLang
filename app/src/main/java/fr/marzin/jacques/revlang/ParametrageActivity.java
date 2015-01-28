@@ -196,6 +196,7 @@ public class ParametrageActivity extends Activity {
         } else {
             maJmSession.setModeRevision("Conjugaisons");
         }
+
         int[] tableauIdThemesChecked = new int[lThemes.getCheckedItemCount()];
         int j = 0;
         for (int i = 0; i < lThemes.getCount(); i++) {
@@ -205,6 +206,7 @@ public class ParametrageActivity extends Activity {
             }
         }
         maJmSession.setListeThemes(tableauIdThemesChecked);
+
         int[] tableauIdVerbesChecked = new int[lVerbes.getCheckedItemCount()];
         j = 0;
         for (int i = 0 ; i < lVerbes.getCount() ; i++) {
@@ -214,6 +216,7 @@ public class ParametrageActivity extends Activity {
             }
         }
         maJmSession.setListeVerbes(tableauIdVerbesChecked);
+
         maJmSession.creerListe();
         String sousTitre = "Liste de " + maJmSession.getNbTermesListe() + "terme(s) (" + maJmSession.getTailleListe() + ")";
         getActionBar().setSubtitle(sousTitre);

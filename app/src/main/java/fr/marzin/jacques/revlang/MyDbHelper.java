@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class MyDbHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 13;
+    public static final int DATABASE_VERSION = 16;
     public static final String DATABASE_NAME = "RevLangues.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
@@ -79,7 +79,8 @@ public class MyDbHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_SESSIONS =
             "CREATE TABLE " + SessionContract.SessionTable.TABLE_NAME + " (" +
-                    SessionContract.SessionTable.COLUMN_NAME_LANGUE + " STRING PRIMARY KEY" + COMMA_SEP +
+                    SessionContract.SessionTable.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
+                    SessionContract.SessionTable.COLUMN_NAME_LANGUE  + TEXT_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_DERNIERE + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_MODE_REVISION + TEXT_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_POIDS_MIN + INTEGER_TYPE + COMMA_SEP +
@@ -92,17 +93,27 @@ public class MyDbHelper extends SQLiteOpenHelper {
                     SessionContract.SessionTable.COLUMN_NAME_LISTE_VERBES + TEXT_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_LISTE + TEXT_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_THEME_ID + INTEGER_TYPE + COMMA_SEP +
-                    SessionContract.SessionTable.COLUMN_NAME_THEME_POS + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_MOT_ID + INTEGER_TYPE + COMMA_SEP +
-                    SessionContract.SessionTable.COLUMN_NAME_MOT_POS + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_VERBE_ID + INTEGER_TYPE + COMMA_SEP +
-                    SessionContract.SessionTable.COLUMN_NAME_VERBE_POS + INTEGER_TYPE + COMMA_SEP +
-                    SessionContract.SessionTable.COLUMN_NAME_FORME_ID + INTEGER_TYPE + COMMA_SEP +
-                    SessionContract.SessionTable.COLUMN_NAME_FORME_POS + INTEGER_TYPE +
+                    SessionContract.SessionTable.COLUMN_NAME_FORME_ID + INTEGER_TYPE +
                     " )";
 
     private static final String SQL_DELETE_SESSIONS =
             "DROP TABLE IF EXISTS " + SessionContract.SessionTable.TABLE_NAME;
+
+    private static final String SQL_CREATE_STATS =
+            "CREATE TABLE " + StatsContract.StatsTable.TABLE_NAME + " (" +
+                    StatsContract.StatsTable.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
+                    StatsContract.StatsTable.COLUMN_NAME_LANGUE_ID + TEXT_TYPE + COMMA_SEP +
+                    StatsContract.StatsTable.COLUMN_NAME_DATE + TEXT_TYPE + COMMA_SEP +
+                    StatsContract.StatsTable.COLUMN_NAME_NB_QUESTIONS_MOTS + INTEGER_TYPE + COMMA_SEP +
+                    StatsContract.StatsTable.COLUMN_NAME_NB_ERREURS_MOTS + INTEGER_TYPE + COMMA_SEP +
+                    StatsContract.StatsTable.COLUMN_NAME_NB_QUESTIONS_FORMES + INTEGER_TYPE + COMMA_SEP +
+                    StatsContract.StatsTable.COLUMN_NAME_NB_ERREURS_FORMES + INTEGER_TYPE +
+                    " )";
+
+    private static final String SQL_DELETE_STATS =
+            "DROP TABLE IF EXISTS " + StatsContract.StatsTable.TABLE_NAME;
 
     public static final String TABLE_NAME = "sessions";
     public static final String COLUMN_NAME_LANGUE = "langue";
@@ -123,16 +134,25 @@ public class MyDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_MOTS);
         db.execSQL(SQL_CREATE_FORMES);
         db.execSQL(SQL_CREATE_SESSIONS);
+        db.execSQL(SQL_CREATE_STATS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL(SQL_DELETE_THEMES);
-            db.execSQL(SQL_DELETE_VERBES);
-            db.execSQL(SQL_DELETE_MOTS);
-            db.execSQL(SQL_DELETE_FORMES);
-            db.execSQL(SQL_DELETE_SESSIONS);
-            onCreate(db);
+        if (oldVersion == 13 && newVersion == 14) {
+            db.execSQL(SQL_CREATE_STATS);
+        } else if (oldVersion == 14 && newVersion == 15) {
+            db.execSQL(SQL_DELETE_STATS);
+            db.execSQL(SQL_CREATE_STATS);
+        } else {
+                db.execSQL(SQL_DELETE_THEMES);
+                db.execSQL(SQL_DELETE_VERBES);
+                db.execSQL(SQL_DELETE_MOTS);
+                db.execSQL(SQL_DELETE_FORMES);
+                db.execSQL(SQL_DELETE_SESSIONS);
+                db.execSQL(SQL_DELETE_STATS);
+                onCreate(db);
+        }
     }
 }
 

@@ -31,19 +31,9 @@ public class VerbesActivity extends Activity {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
         }
         this.setTitle("Verbes");
-        SQLiteDatabase db = maJmSession.getDb();
-        String sortOrder =
-                VerbeContract.VerbeTable.COLUMN_NAME_LANGUE + " ASC";
-        String selection = VerbeContract.VerbeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"";
-        final Cursor mCursor = db.query(
-                VerbeContract.VerbeTable.TABLE_NAME,
-                null,
-                selection,
-                null,
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
-        );
+
+        final Cursor mCursor = Verbe.where(maJmSession.getDb(),"langue_id = \"" + langue.substring(0,2).toLowerCase() + "\"");
+
         ListAdapter adapter = new SimpleCursorAdapter(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -53,6 +43,7 @@ public class VerbesActivity extends Activity {
                 0);  // Parallel array of which template objects to bind to those columns.
         ListView listView = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.listView);
         listView.setAdapter(adapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {

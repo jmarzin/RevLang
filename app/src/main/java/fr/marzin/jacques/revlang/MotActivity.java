@@ -29,64 +29,52 @@ public class MotActivity extends Activity {
         }
         this.setTitle("Mot");
         int mot_id = maJmSession.getMotId();
-        SQLiteDatabase db = maJmSession.getDb();
-        String selection = MotContract.MotTable.COLUMN_NAME_ID + " = " + mot_id;
+        Mot mot = Mot.find(maJmSession.getDb(),mot_id);
+
         TextView t_id = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_id);
         t_id.setText(""+mot_id);
-        final Cursor mCursor = db.query(
-                MotContract.MotTable.TABLE_NAME,
-                null,
-                selection,
-                null,
-                null,
-                null,
-                null
-        );
-        if (mCursor.moveToFirst()) {
-            String langue_id = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE_ID));
+        TextView l_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.l_langue);
+        l_langue.setText("en "+langue);
+
+        if (mot != null) {
+
             TextView t_langue_id = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue_id);
-            t_langue_id.setText(langue_id);
-            int theme_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_THEME_ID));
-            final Cursor vCursor = db.rawQuery("select langue from themes where _id = " + theme_id,null);
-            String theme_langue;
-            if (vCursor.moveToFirst()) {
-                theme_langue = vCursor.getString(vCursor.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE));
-            } else {
-                theme_langue = "";
-            }
-            vCursor.close();
+            t_langue_id.setText(mot.langue_id);
+
             TextView t_theme_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_theme_langue);
-            t_theme_langue.setText(theme_langue);
-            String francais = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_FRANCAIS));
+            if (mot.theme != null) {
+                t_theme_langue.setText(mot.theme.langue);
+            } else {
+                t_theme_langue.setText("");
+            }
+
             TextView t_francais = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_francais);
-            t_francais.setText(francais);
-            String directeur = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR));
+            t_francais.setText(mot.francais);
+
             TextView t_directeur = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_directeur);
-            t_directeur.setText(directeur);
-            TextView l_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.l_langue);
-            l_langue.setText("en "+langue);
-            String mlangue = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE));
+            t_directeur.setText(mot.mot_directeur);
+
             TextView t_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue);
-            t_langue.setText(mlangue);
-            String prononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_PRONONCIATION));
+            t_langue.setText(mot.langue);
+
             TextView t_prononciation = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_prononciation);
-            t_prononciation.setText(prononciation);
-            String date_rev = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_DATE_REV));
+            t_prononciation.setText(mot.prononciation);
+
             TextView t_date_rev = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_date_rev);
-            t_date_rev.setText(date_rev);
-            int poids = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_POIDS));
+            t_date_rev.setText(mot.date_rev);
+
             TextView t_poids = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_poids);
-            t_poids.setText(""+poids);
-            int nberr = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_NB_ERR));
+            t_poids.setText(""+mot.poids);
+
             TextView t_nberr = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_nberr);
-            t_nberr.setText(""+nberr);
-            int dist_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_DIST_ID));
+            t_nberr.setText(""+mot.nb_err);
+
             TextView t_dist_id = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_dist_id);
-            t_dist_id.setText(""+dist_id);
-            String date_maj = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_DATE_MAJ));
+            t_dist_id.setText(""+mot.dist_id);
+
             TextView t_date_maj = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_date_maj);
-            t_date_maj.setText(date_maj);
-            mCursor.close();
+            t_date_maj.setText(mot.date_maj);
+
         }
     }
 

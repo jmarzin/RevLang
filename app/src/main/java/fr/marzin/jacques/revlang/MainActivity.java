@@ -6,6 +6,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,11 +30,13 @@ public class MainActivity extends Activity {
         String text = getString(fr.marzin.jacques.revlang.R.string.erreurChoixLangue);
         int duration = Toast.LENGTH_LONG;
         message = Toast.makeText(context, text, duration);
+        message.setGravity(Gravity.TOP, 0, 0);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         maJmSession = new JmSession(null,getBaseContext());
         TextView mTexteLangue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue);
         mTexteLangue.setText(maJmSession.getLangue());
@@ -163,6 +166,7 @@ public class MainActivity extends Activity {
             maJmSession.setNbQuestions(0);
             maJmSession.setNbErreurs(0);
         }
-        this.finish();
+        JmSession.dejaMaj = false;
+        finish();
     }
 }

@@ -3,7 +3,6 @@ package fr.marzin.jacques.revlang;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.sql.Timestamp;
@@ -21,497 +20,142 @@ import java.util.Set;
 public class JmSession {
 
     private String langue;
-    private int derniereSession;
     private MyDbHelper dbManager;
     private SQLiteDatabase db;
-    private int[] listeThemes;
-    private int[] listeVerbes;
-    private ArrayList<Integer> liste;
-    private String modeRevision;
-    private int poidsMin;
-    private int errMin;
-    private int ageRev;
     private String dateRev;
-    private int conserveStats;
-    private int nbQuestions;
-    private int nbErreurs;
-    private int themeId;
-    private int themePos;
-    private int motId;
-    private int motPos;
-    private int verbeId;
-    private int verbePos;
-    private int formeId;
-    private int formePos;
+    private Session session;
 
     public static Boolean dejaMaj;
     public static Random aleatoire;
-    public static Hashtable<String,String[][]> forme_ids = new Hashtable() {
-        { put("Italien",  new String [][] {
-                {"Gérondif"},
-                {"Participe passé"},
-                {"1ère pers sing. présent indic."},
-                {"2ème pers sing. présent indic."},
-                {"3ème pers sing. présent indic."},
-                {"1ère pers plur. présent indic."},
-                {"2ème pers plur. présent indic."},
-                {"3ème pers plur. présent indic."},
-                {"1ère pers sing. imparfait indic."},
-                {"2ème pers sing. imparfait indic."},
-                {"3ème pers sing. imparfait indic."},
-                {"1ère pers plur. imparfait indic."},
-                {"2ème pers plur. imparfait indic."},
-                {"3ème pers plur. imparfait indic."},
-                {"1ère pers sing. passé simple indic."},
-                {"2ème pers sing. passé simple indic."},
-                {"3ème pers sing. passé simple indic."},
-                {"1ère pers plur. passé simple indic."},
-                {"2ème pers plur. passé simple indic."},
-                {"3ème pers plur. passé simple indic."},
-                {"1ère pers sing. futur indic."},
-                {"2ème pers sing. futur indic."},
-                {"3ème pers sing. futur indic."},
-                {"1ère pers plur. futur indic."},
-                {"2ème pers plur. futur indic."},
-                {"3ème pers plur. futur indic."},
-                {"1ère pers sing. présent cond."},
-                {"2ème pers sing. présent cond."},
-                {"3ème pers sing. présent cond."},
-                {"1ère pers plur. présent cond."},
-                {"2ème pers plur. présent cond."},
-                {"3ème pers plur. présent cond."},
-                {"1ère pers sing. présent subj."},
-                {"2ème pers sing. présent subj."},
-                {"3ème pers sing. présent subj."},
-                {"1ère pers plur. présent subj."},
-                {"2ème pers plur. présent subj."},
-                {"3ème pers plur. présent subj."},
-                {"1ère pers sing. imparfait subj."},
-                {"2ème pers sing. imparfait subj."},
-                {"3ème pers sing. imparfait subj."},
-                {"1ère pers plur. imparfait subj."},
-                {"2ème pers plur. imparfait subj."},
-                {"3ème pers plur. imparfait subj."},
-                {"2ème pers sing. impératif"},
-                {"3ème pers sing. impératif"},
-                {"1ère pers plur. impératif"},
-                {"2ème pers plur. impératif"},
-                {"3ème pers plur. impératif"}});
-          put("Anglais", new String [][] {
-                {"Preterit"},
-                {"Participe passé"}});
-        }};
 
-    public JmSession(String langue,Context context){
+    public JmSession(String langue,Context context) {
+        this.langue = langue;
         if (dejaMaj == null) {
             dejaMaj = false;
         }
-        this.derniereSession = 1;
         this.dbManager = new MyDbHelper(context);
         this.db = this.dbManager.getWritableDatabase();
-        Cursor mCursor;
+        String selection;
         if (langue == null) {
-            //
-            // si la langue n'est pas fournie, on recherche la dernière session et on change la langue
-            //
-            String q = "SELECT * FROM " + SessionContract.SessionTable.TABLE_NAME +
-                    " WHERE " + SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
-            mCursor = this.db.rawQuery(q, null);
-            if (!mCursor.moveToFirst()) {
-                mCursor.close();
-                initSession(context.getString(fr.marzin.jacques.revlang.R.string.titre_langue));
-                return;
-            }
+            selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
         } else {
-            //
-            // si la langue est fournie, on cherche la session correspondante
-            //
-            mCursor = lit_session();
-            if (!mCursor.moveToFirst()) {
-                mCursor.close();
-                initSession(langue);
-                return;
-            }
-        };
-        //
-        // si une session a été trouvée en base, on la charge
-        //
-        this.langue = mCursor.getString(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_LANGUE));
-        this.modeRevision = mCursor.getString(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_MODE_REVISION));
-        this.poidsMin = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_POIDS_MIN));
-        this.errMin = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_ERR_MIN));
-        this.ageRev = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_AGE_REV));
-        this.conserveStats = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_CONSERVE_STATS));
-        this.nbQuestions = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_NB_QUESTIONS));
-        this.nbErreurs = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_NB_ERREURS));
-        this.listeVerbes = deserialize(mCursor.getString(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_LISTE_VERBES)));
-        this.listeThemes = deserialize(mCursor.getString(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_LISTE_THEMES)));
-        int[] listeb = deserialize(mCursor.getString(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_LISTE)));
-        this.liste = new ArrayList<Integer>();
-        for (int i = 0 ; i < listeb.length ; i++) {
-            this.liste.add(listeb[i]);
+            selection = SessionContract.SessionTable.COLUMN_NAME_LANGUE + " = \"" + langue + "\"";
         }
-        this.themeId = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_THEME_ID));
-        this.themePos = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_THEME_POS));
-        this.motId = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_MOT_ID));
-        this.motPos = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_MOT_POS));
-        this.verbeId = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_VERBE_ID));
-        this.verbePos = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_VERBE_POS));
-        this.formeId = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_FORME_ID));
-        this.formePos = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_FORME_POS));
-        mCursor.close();
-    }
-
-    private String serialize(int content[]) {
-        return Arrays.toString(content);
-    }
-
-    private Boolean myEqualsString(String s1, String s2) {
-        if (s1.length() != s2.length()) {
-            return false;
-        } else {
-            for (int i = 0; i < s1.length() ; i++) {
-                if (s1.charAt(i) != s2.charAt(i) ) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private int[] deserialize(String content){
-        if (content == null || myEqualsString(content,"[]") || myEqualsString(content,"")) {
-            return new int[0];
-        } else {
-            String[] tableauString = content.substring(1, content.length()-1).split(",");
-            int[] tableauInt = new int[tableauString.length];
-            for (int i = 0; i < tableauString.length; i++) {
-                tableauInt[i] = Integer.parseInt(tableauString[i].trim());
-            }
-            return tableauInt;
+        session = Session.find_by(db, selection);
+        this.langue = session.langue;
+        if (session == null) {
+            session = new Session();
+            session.langue = context.getString(fr.marzin.jacques.revlang.R.string.titre_langue);
+            return;
         }
     }
 
-
-    private void initSession(String langue) {
-        this.langue = langue;
-        this.modeRevision = null;
-        this.poidsMin = 0;
-        this.errMin = 0;
-        this.ageRev = 0;
-        this.conserveStats = 0;
-        this.nbQuestions = 0;
-        this.nbErreurs = 0;
-        this.listeThemes = new int[0];
-        this.listeVerbes = new int[0];
-        this.liste = new ArrayList<Integer>();
-    }
-
-    public Cursor getCursor(String objets) {
+    public String getSelection(String objets) {
         Timestamp date = new Timestamp(System.currentTimeMillis());
-        date.setTime(date.getTime() -ageRev*24*3600000);
+        date.setTime(date.getTime() -session.ageRev*24*3600000);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateRev = sdf.format(date);
-        String table;
-        String cond1;
-        String cond2 = "";
-        String cond3 = "";
-        String cond4 = "";
-        String cond5 = "";
-        String [] projection = new String[3];
+        String cond1, cond2 = "", cond3 = "", cond4 = "", cond5 = "";
         if (objets == "Mots") {
-            table = MotContract.MotTable.TABLE_NAME;
             cond1 = MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2).toLowerCase() + "\"";
-            if (ageRev != 0) {
+            if (session.ageRev != 0) {
                 cond2 = " AND " + MotContract.MotTable.COLUMN_NAME_DATE_REV + " <= \"" + dateRev + "\"";
             }
-            if (poidsMin > 1) {
-                cond3 = " AND " + MotContract.MotTable.COLUMN_NAME_POIDS + " >= " + poidsMin;
+            if (session.poidsMin > 1) {
+                cond3 = " AND " + MotContract.MotTable.COLUMN_NAME_POIDS + " >= " + session.poidsMin;
             }
-            if (errMin > 0) {
-                cond4 = " AND " + MotContract.MotTable.COLUMN_NAME_NB_ERR + " >= " + errMin;
+            if (session.errMin > 0) {
+                cond4 = " AND " + MotContract.MotTable.COLUMN_NAME_NB_ERR + " >= " + session.errMin;
             }
-            if (listeThemes.length > 1) {
+            if (session.listeThemes.length > 0) {
                 cond5 = " AND " + MotContract.MotTable.COLUMN_NAME_THEME_ID + " IN (";
-                for (int i = 0; i < listeThemes.length; i++) {
+                for (int i = 0; i < session.listeThemes.length; i++) {
                     if (i != 0) {
                         cond5 += ",";
                     }
-                    cond5 += listeThemes[i];
+                    cond5 += session.listeThemes[i];
                 }
                 cond5 += ")";
-            } else if (listeThemes.length == 1) {
-                cond5 = " AND " + MotContract.MotTable.COLUMN_NAME_THEME_ID + " = " + listeThemes[0];
             }
-            projection[0] = MotContract.MotTable.COLUMN_NAME_ID;
-            projection[1] = MotContract.MotTable.COLUMN_NAME_POIDS;
-            projection[2] = MotContract.MotTable.COLUMN_NAME_FRANCAIS;
         } else {
-            table = FormeContract.FormeTable.TABLE_NAME;
             cond1 = FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"";
-            if (ageRev != 0) {
+            if (session.ageRev != 0) {
                 cond2 = " AND " + FormeContract.FormeTable.COLUMN_NAME_DATE_REV + " <= \"" + dateRev + "\"";
             }
-            if (poidsMin > 1) {
-                cond3 = " AND " + FormeContract.FormeTable.COLUMN_NAME_POIDS + " >= " + poidsMin;
+            if (session.poidsMin > 1) {
+                cond3 = " AND " + FormeContract.FormeTable.COLUMN_NAME_POIDS + " >= " + session.poidsMin;
             }
-            if (errMin > 0) {
-                cond4 = " AND " + FormeContract.FormeTable.COLUMN_NAME_NB_ERR + " >= " + errMin;
+            if (session.errMin > 0) {
+                cond4 = " AND " + FormeContract.FormeTable.COLUMN_NAME_NB_ERR + " >= " + session.errMin;
             }
-            if (listeVerbes.length > 0) {
+            if (session.listeVerbes.length > 0) {
                 cond5 = " AND " + FormeContract.FormeTable.COLUMN_NAME_VERBE_ID + " IN (";
-                for (int i=0 ; i < listeVerbes.length ; i++) {
+                for (int i=0 ; i < session.listeVerbes.length ; i++) {
                     if (i != 0) {cond5 += ",";}
-                    cond5 += listeVerbes[i];
+                    cond5 += session.listeVerbes[i];
                 }
                 cond5 += ")";
             }
-            projection[0] = FormeContract.FormeTable.COLUMN_NAME_ID;
-            projection[1] = FormeContract.FormeTable.COLUMN_NAME_POIDS;
-            projection[2] = FormeContract.FormeTable.COLUMN_NAME_LANGUE;
         }
-        String selection = cond1 + cond2 + cond3 + cond4 + cond5;
-        Cursor c = db.query(
-                table,
-                projection,
-                selection,
-                null,
-                null,
-                null,
-                null
-        );
-        return c;
+        return cond1 + cond2 + cond3 + cond4 + cond5;
     }
 
     public void creerListe() {
 
         String id;
         String poids;
-        String [] projection = new String[2];
         Cursor c;
-        if (modeRevision.equals("Vocabulaire")) {
+        if (session.modeRevision.equals("Vocabulaire")) {
+            c = Mot.where(db, getSelection("Mots"));
             id = MotContract.MotTable.COLUMN_NAME_ID;
             poids = MotContract.MotTable.COLUMN_NAME_POIDS;
-            c = getCursor ("Mots");
         } else {
+            c = Forme.where(db, getSelection("Formes"));
             id = FormeContract.FormeTable.COLUMN_NAME_ID;
             poids = FormeContract.FormeTable.COLUMN_NAME_POIDS;
-            c = getCursor("Formes");
         }
-        liste = new ArrayList<Integer>();
+        session.liste = new ArrayList<Integer>();
         for (int i = 0 ; i < c.getCount() ; i++) {
             c.moveToNext();
             int element = c.getInt(c.getColumnIndexOrThrow(id));
             int nb = c.getInt(c.getColumnIndexOrThrow(poids));
             for (int j = 1 ; j <= nb ; j++) {
-                liste.add(element);
+                session.liste.add(element);
             }
         }
     }
 
     public void initRevision() {
-        if (modeRevision == null) {
-            modeRevision = "Vocabulaire";
+        if (session.modeRevision == null) {
+            session.modeRevision = "Vocabulaire";
             creerListe();
         };
     }
 
-    private Hashtable questionMot(int tire) {
-        Cursor mCursor;
-        String q = "SELECT * FROM " + MotContract.MotTable.TABLE_NAME +
-                " WHERE " + MotContract.MotTable.COLUMN_NAME_ID + " = " + tire;
-        mCursor = this.db.rawQuery(q, null);
-        if (!mCursor.moveToFirst()) {
-            mCursor.close();
-            return null;
-        } else {
-            int qTheme_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_THEME_ID));
-            String qFrancais = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_FRANCAIS));
-            String qLangue = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE));
-            String qPrononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_PRONONCIATION));
-            int qPoids = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_POIDS));
-            int qErreur = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_NB_ERR));
-            mCursor.close();
-            q = "SELECT * FROM " + ThemeContract.ThemeTable.TABLE_NAME +
-                    " WHERE " + MotContract.MotTable.COLUMN_NAME_ID + " = " + qTheme_id;
-            mCursor = this.db.rawQuery(q,null);
-            if (!mCursor.moveToFirst()) {
-                mCursor.close();
-                return null;
-            }
-            String qTheme = mCursor.getString(mCursor.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE));
-            Hashtable hashQuestion = new Hashtable();
-            hashQuestion.put("id",tire);
-            hashQuestion.put("ligne1",qTheme);
-            hashQuestion.put("ligne2",qFrancais);
-            hashQuestion.put("reponse",qLangue);
-            hashQuestion.put("prononciation",qPrononciation);
-            hashQuestion.put("poids",qPoids);
-            hashQuestion.put("erreurs",qErreur);
-            return hashQuestion;
-        }
-    }
-
-    private Hashtable questionForme(int tire) {
-        Cursor mCursor;
-        String q = "SELECT * FROM " + FormeContract.FormeTable.TABLE_NAME +
-                " WHERE " + FormeContract.FormeTable.COLUMN_NAME_ID + " = " + tire;
-        mCursor = this.db.rawQuery(q, null);
-        if (!mCursor.moveToFirst()) {
-            mCursor.close();
-            return null;
-        } else {
-            int qVerbe_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_VERBE_ID));
-            int forme_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_FORME_ID)) - 1;
-            String qForme_id =  forme_ids.get(langue)[forme_id][0];
-            String qLangue = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_LANGUE));
-            String qPrononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION));
-            int qPoids = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_POIDS));
-            int qErreur = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_NB_ERR));
-            mCursor.close();
-            q = "SELECT * FROM " + VerbeContract.VerbeTable.TABLE_NAME +
-                    " WHERE " + VerbeContract.VerbeTable.COLUMN_NAME_ID + " = " + qVerbe_id;
-            mCursor = this.db.rawQuery(q,null);
-            if (!mCursor.moveToFirst()) {
-                mCursor.close();
-                return null;
-            }
-            String qVerbe = mCursor.getString(mCursor.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_LANGUE));
-            Hashtable hashQuestion = new Hashtable();
-            hashQuestion.put("id",tire);
-            hashQuestion.put("ligne1",qVerbe);
-            hashQuestion.put("ligne2",qForme_id);
-            hashQuestion.put("reponse",qLangue);
-            hashQuestion.put("prononciation",qPrononciation);
-            hashQuestion.put("poids",qPoids);
-            hashQuestion.put("erreurs",qErreur);
-            return hashQuestion;
-        }
-    }
-
-    public Hashtable question() {
-        if (liste.size() == 0) {
-            return null;
-        }
-        int tire = liste.get(aleatoire.nextInt(liste.size()));
-        if (modeRevision.equals("Vocabulaire")) {
-            return questionMot(tire);
-        } else {
-            return questionForme(tire);
-        }
-    }
-
-    private void ajusteObjet (int id, int poids, int erreurs) {
-        ContentValues values = new ContentValues();
+    public void majStats(int nbQuestions, int nbErreurs) {
         Timestamp date = new Timestamp(System.currentTimeMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String dateRev = sdf.format(date);
-        String colonne_id;
-        String colonne_poids;
-        String colonne_nberreurs;
-        String colonne_date_rev;
-        String nom_table;
-        if (modeRevision.equals("Vocabulaire")) {
-            nom_table = MotContract.MotTable.TABLE_NAME;
-            colonne_id = MotContract.MotTable.COLUMN_NAME_ID;
-            colonne_poids = MotContract.MotTable.COLUMN_NAME_POIDS;
-            colonne_nberreurs = MotContract.MotTable.COLUMN_NAME_NB_ERR;
-            colonne_date_rev = MotContract.MotTable.COLUMN_NAME_DATE_REV;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dateCourante = sdf.format(date);
+
+        String cond = StatsContract.StatsTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"";
+        cond += " AND " + StatsContract.StatsTable.COLUMN_NAME_DATE + " = \"" + dateCourante + "\"";
+        Stats stats = Stats.find_by(db,cond);
+
+        if (stats == null) {
+            stats = new Stats();
+            stats.date_rev = dateCourante;
+            stats.langue_id = langue.substring(0,2).toLowerCase();
+        }
+
+        if (session.modeRevision.equals("Vocabulaire")) {
+            stats.nb_questions_mots += nbQuestions;
+            stats.nb_erreurs_mots += nbErreurs;
         } else {
-            nom_table = FormeContract.FormeTable.TABLE_NAME;
-            colonne_id = FormeContract.FormeTable.COLUMN_NAME_ID;
-            colonne_poids = FormeContract.FormeTable.COLUMN_NAME_POIDS;
-            colonne_nberreurs = FormeContract.FormeTable.COLUMN_NAME_NB_ERR;
-            colonne_date_rev = FormeContract.FormeTable.COLUMN_NAME_DATE_REV;
+            stats.nb_questions_formes += nbQuestions;
+            stats.nb_erreurs_formes += nbErreurs;
         }
-        values.put(colonne_poids, poids);
-        values.put(colonne_nberreurs,erreurs);
-        values.put(colonne_date_rev,dateRev);
-        String selection = colonne_id + " = " + id;
-        int count = db.update(
-                nom_table,
-                values,
-                selection,
-                null);
-    }
 
-//    private void ajusteMot(int id, int poids, int erreurs) {
-//        ContentValues values = new ContentValues();
-//        values.put(MotContract.MotTable.COLUMN_NAME_POIDS, poids);
-//        values.put(MotContract.MotTable.COLUMN_NAME_NB_ERR,erreurs);
-//        Timestamp date = new Timestamp(System.currentTimeMillis());
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        String dateRev = sdf.format(date);
-//        values.put(MotContract.MotTable.COLUMN_NAME_DATE_REV,dateRev);
-//        String selection = MotContract.MotTable.COLUMN_NAME_ID + " = " + id;
-//        int count = db.update(
-//                MotContract.MotTable.TABLE_NAME,
-//                values,
-//                selection,
-//                null);
-//    }
-
-//    private void ajusteForme(int id, int poids, int erreurs) {
-//        ContentValues values = new ContentValues();
-//        values.put(FormeContract.FormeTable.COLUMN_NAME_POIDS, poids);
-//        values.put(FormeContract.FormeTable.COLUMN_NAME_NB_ERR,erreurs);
-//        Timestamp date = new Timestamp(System.currentTimeMillis());
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        String dateRev = sdf.format(date);
-//        values.put(FormeContract.FormeTable.COLUMN_NAME_DATE_REV,dateRev);
-//        String selection = FormeContract.FormeTable.COLUMN_NAME_ID + " = " + id;
-//        int count = db.update(
-//                FormeContract.FormeTable.TABLE_NAME,
-//                values,
-//                selection,
-//                null);
-//    }
-
-    public int reduit(Hashtable question) {
-        int id = (int) question.get("id");
-        int poids = (int) question.get("poids");
-        int erreurs = (int) question.get("erreurs");
-        int nRemove;
-        int nouveauPoids;
-        if (poids == 1) {
-            nouveauPoids = 1;
-            nRemove = 1;
-        } else {
-            nouveauPoids = poids/2;
-            nRemove = poids - nouveauPoids;
-        }
-        for (int i=0 ; i < nRemove ; i++) {
-            liste.remove(question.get("id"));
-        }
-        if (errMin > 0 && erreurs > 0) {
-            erreurs -= 1;
-        }
-//        if (modeRevision.equals("Vocabulaire")) {
-//            ajusteMot(id, nouveauPoids, erreurs);
-//        } else {
-//            ajusteForme(id,nouveauPoids, erreurs);
-//        }
-        ajusteObjet(id, nouveauPoids, erreurs);
-        return nouveauPoids;
-    }
-
-    public int augmente(Hashtable question) {
-        int id = (int) question.get("id");
-        int poids = (int) question.get("poids");
-        int erreurs = (int) question.get("erreurs");
-        int nouveauPoids = poids*2;
-        int nAjout = nouveauPoids - poids;
-        for (int i=0 ; i < nAjout ; i++) {
-            liste.add(id);
-        }
-        erreurs += 1;
-//        if (modeRevision.equals("Vocabulaire")) {
-//            ajusteMot(id, nouveauPoids, erreurs);
-//        } else {
-//            ajusteForme(id, nouveauPoids, erreurs);
-//        }
-        ajusteObjet(id, nouveauPoids, erreurs);
-        return nouveauPoids;
+        stats.save(db);
     }
 
     public String getLangue() {
@@ -523,14 +167,14 @@ public class JmSession {
     }
 
     public Boolean getDerniereSession() {
-        return (derniereSession == 1);
+        return (session.derniereSession == 1);
     }
 
     public void setDerniereSession(Boolean derniereSession) {
         if (derniereSession) {
-            this.derniereSession = 1;
+            session.derniereSession = 1;
         } else {
-            this.derniereSession = 0;
+            session.derniereSession = 0;
         }
     }
 
@@ -546,86 +190,17 @@ public class JmSession {
         return db;
     }
 
-    private Cursor lit_session() {
-        String q = "SELECT * FROM " + SessionContract.SessionTable.TABLE_NAME +
-                " WHERE " + SessionContract.SessionTable.COLUMN_NAME_LANGUE + " = \"" + langue + "\"";
-        return this.db.rawQuery(q, null);
-
-    }
-
-    private ContentValues sessionValues() {
-        ContentValues values = new ContentValues();
-        values.put(SessionContract.SessionTable.COLUMN_NAME_LANGUE, this.langue);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_DERNIERE,this.derniereSession);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_MODE_REVISION,this.modeRevision);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_POIDS_MIN,poidsMin);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_ERR_MIN,errMin);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_AGE_REV,ageRev);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_CONSERVE_STATS,conserveStats);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_NB_QUESTIONS,nbQuestions);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_NB_ERREURS,nbErreurs);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_LISTE_THEMES,serialize(listeThemes));
-        values.put(SessionContract.SessionTable.COLUMN_NAME_LISTE_VERBES,serialize(listeVerbes));
-        values.put(SessionContract.SessionTable.COLUMN_NAME_THEME_ID,themeId);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_THEME_POS,themePos);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_MOT_ID,motId);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_MOT_POS,motPos);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_VERBE_ID,verbeId);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_VERBE_POS,verbePos);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_FORME_ID,formeId);
-        values.put(SessionContract.SessionTable.COLUMN_NAME_FORME_POS,formePos);
-        int[] listeb = new int[liste.size()];
-        for (int i = 0 ; i < liste.size() ; i++) {
-            listeb[i] = liste.get(i);
-        }
-        values.put(SessionContract.SessionTable.COLUMN_NAME_LISTE,serialize(listeb));
-        return values;
-    }
-
     public void save() {
-        Cursor mCursor = lit_session();
-        ContentValues values = sessionValues();
-        if ((!mCursor.moveToFirst())) {
-            long newRowId;
-            newRowId = db.insert(
-                    SessionContract.SessionTable.TABLE_NAME,
-                    null,
-                    values);
-        } else {
-            String selection = SessionContract.SessionTable.COLUMN_NAME_LANGUE + " = ?";
-            String[] selectionArgs = { this.langue };
-            int count = db.update(
-                    SessionContract.SessionTable.TABLE_NAME,
-                    values,
-                    selection,
-                    selectionArgs);
-        }
-        mCursor.close();
+        session.save(db);
     }
 
 
     public Hashtable getListeTousThemes () {
-        int dim = (int) DatabaseUtils.queryNumEntries(db, ThemeContract.ThemeTable.TABLE_NAME);
+        Cursor c = Theme.where(db,"langue_id = \"" + langue.substring(0,2).toLowerCase() + "\"");
         Hashtable reponse = new Hashtable();
-        int[] listeId = new int[dim];
-        String[] listeNoms = new String[dim];
-        String[] projection = {
-                ThemeContract.ThemeTable.COLUMN_NAME_ID,
-                ThemeContract.ThemeTable.COLUMN_NAME_NUMERO,
-                ThemeContract.ThemeTable.COLUMN_NAME_LANGUE
-        };
-        String sortOrder =
-                ThemeContract.ThemeTable.COLUMN_NAME_NUMERO + " ASC";
-        String selection = ThemeContract.ThemeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"";
-        Cursor c = db.query(
-                ThemeContract.ThemeTable.TABLE_NAME,
-                projection,
-                selection,
-                null,
-                null,
-                null,
-                sortOrder
-        );
+        int[] listeId = new int[c.getCount()];
+        String[] listeNoms = new String[c.getCount()];
+
         for (int i = 0 ; i < c.getCount() ; i++) {
             c.moveToNext();
             listeId[i] = c.getInt(c.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_ID));
@@ -638,26 +213,13 @@ public class JmSession {
     }
 
     public Hashtable getListeTousVerbes () {
-        int dim = (int) DatabaseUtils.queryNumEntries(db, VerbeContract.VerbeTable.TABLE_NAME);
+
+        Cursor c = Verbe.where(db,"langue_id = \"" + langue.substring(0,2).toLowerCase() + "\"");
+
         Hashtable reponse = new Hashtable();
-        int[] listeId = new int[dim];
-        String[] listeNoms = new String[dim];
-        String[] projection = {
-                VerbeContract.VerbeTable.COLUMN_NAME_ID,
-                VerbeContract.VerbeTable.COLUMN_NAME_LANGUE
-        };
-        String sortOrder =
-                VerbeContract.VerbeTable.COLUMN_NAME_LANGUE + " ASC";
-        String selection = VerbeContract.VerbeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"";
-        Cursor c = db.query(
-                VerbeContract.VerbeTable.TABLE_NAME,
-                projection,
-                selection,
-                null,
-                null,
-                null,
-                sortOrder
-        );
+        int[] listeId = new int[c.getCount()];
+        String[] listeNoms = new String[c.getCount()];
+
         for (int i = 0 ; i < c.getCount() ; i++) {
             c.moveToNext();
             listeId[i] = c.getInt(c.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_ID));
@@ -669,57 +231,61 @@ public class JmSession {
 
     }
 
-    public int[] getListeThemes() { return listeThemes; }
+    public ArrayList<Integer> getListe() { return session.liste; }
+
+    public void setListe(ArrayList<Integer> liste) { session.liste = liste; }
+
+    public int[] getListeThemes() { return session.listeThemes; }
 
     public void setListeThemes(int[] listeThemes) {
-        this.listeThemes = listeThemes;
+        session.listeThemes = listeThemes;
     }
 
     public int[] getListeVerbes() {
-        return listeVerbes;
+        return session.listeVerbes;
     }
 
     public void setListeVerbes(int[] listeVerbes) {
-        this.listeVerbes = listeVerbes;
+        session.listeVerbes = listeVerbes;
     }
 
-    public int getTailleListe() { return liste.size(); }
+    public int getTailleListe() { return session.liste.size(); }
 
     public int getNbTermesListe() {
-        Set<Integer> uniqueListe = new HashSet<Integer>(liste);
+        Set<Integer> uniqueListe = new HashSet<Integer>(session.liste);
         return uniqueListe.size();
     }
 
     public int getPoidsMin() {
-        return poidsMin;
+        return session.poidsMin;
     }
 
     public void setPoidsMin(int poidsMin) {
-        this.poidsMin = poidsMin;
+        session.poidsMin = poidsMin;
     }
 
     public int getErrMin() {
-        return errMin;
+        return session.errMin;
     }
 
     public void setErrMin(int errMin) {
-        this.errMin = errMin;
+        session.errMin = errMin;
     }
 
     public int getAgeRev() {
-        return ageRev;
+        return session.ageRev;
     }
 
     public void setAgeRev(int ageRev) {
-        this.ageRev = ageRev;
+        session.ageRev = ageRev;
     }
 
     public String getModeRevision() {
-        return modeRevision;
+        return session.modeRevision;
     }
 
     public void setModeRevision(String modeRevision) {
-        this.modeRevision = modeRevision;
+        session.modeRevision = modeRevision;
     }
 
     public String getDateRev() {
@@ -731,59 +297,43 @@ public class JmSession {
     }
 
     public int getConserveStats() {
-        return conserveStats;
+        return session.conserveStats;
     }
 
     public void setConserveStats(int conserveStats) {
-        this.conserveStats = conserveStats;
+        session.conserveStats = conserveStats;
     }
 
     public int getNbQuestions() {
-        return nbQuestions;
+        return session.nbQuestions;
     }
 
     public void setNbQuestions(int nbQuestions) {
-        this.nbQuestions = nbQuestions;
+        session.nbQuestions = nbQuestions;
     }
 
     public int getNbErreurs() {
-        return nbErreurs;
+        return session.nbErreurs;
     }
 
     public void setNbErreurs(int nbErreurs) {
-        this.nbErreurs = nbErreurs;
+        session.nbErreurs = nbErreurs;
     }
 
-    public void setThemeId(int row) {this.themeId = row; }
+    public void setThemeId(int row) {session.themeId = row; }
 
-    public int getThemeId() { return themeId; }
+    public int getThemeId() { return session.themeId; }
 
-    public void setThemePos(int pos) {this.themePos = pos; }
+    public void setMotId(int row) {session.motId = row;}
 
-    public int getThemePos() { return themePos; }
+    public int getMotId() { return session.motId; }
 
-    public void setMotId(int row) {this.motId = row;}
+    public void setVerbeId(int row) {session.verbeId = row;}
 
-    public int getMotId() { return motId; }
+    public int getVerbeId() { return session.verbeId; }
 
-    public void setMotPos(int pos) {this.motPos = pos;}
+    public void setFormeId(int row) {session.formeId = row;}
 
-    public int getMotPos() { return motPos; }
-
-    public void setVerbeId(int row) {this.verbeId = row;}
-
-    public int getVerbeId() { return verbeId; }
-
-    public void setVerbePos(int pos) {this.verbePos = pos; }
-
-    public int getVerbePos() { return verbePos; }
-
-    public void setFormeId(int row) {this.formeId = row;}
-
-    public int getFormeId() { return formeId; }
-
-    public void setFormePos(int pos) {this.formePos = pos; }
-
-    public int getFormePos() { return formePos; }
+    public int getFormeId() { return session.formeId; }
 
 }

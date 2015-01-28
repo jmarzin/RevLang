@@ -31,19 +31,9 @@ public class ThemesActivity extends Activity {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
         }
         this.setTitle("Thèmes");
-        SQLiteDatabase db = maJmSession.getDb();
-        String sortOrder =
-                ThemeContract.ThemeTable.COLUMN_NAME_NUMERO + " ASC";
-        String selection = ThemeContract.ThemeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2).toLowerCase() + "\"";
-        final Cursor mCursor = db.query(
-                ThemeContract.ThemeTable.TABLE_NAME,
-                null,
-                selection,
-                null,
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
-        );
+
+        final Cursor mCursor = Theme.where(maJmSession.getDb(),"langue_id = \"" + langue.substring(0,2).toLowerCase() + "\"");
+
         ListAdapter adapter = new SimpleCursorAdapter(
                 this,
                 fr.marzin.jacques.revlang.R.layout.ligne_liste,
@@ -53,6 +43,7 @@ public class ThemesActivity extends Activity {
                 0);  // Parallel array of which template objects to bind to those columns.
         ListView listView = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.listView);
         listView.setAdapter(adapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {

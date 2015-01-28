@@ -11,6 +11,7 @@ public final class SessionContract {
 
     public static abstract class SessionTable implements BaseColumns {
         public static final String TABLE_NAME = "sessions";
+        public static final String COLUMN_NAME_ID = "_id";
         public static final String COLUMN_NAME_LANGUE = "langue";
         public static final String COLUMN_NAME_DERNIERE = "derniere";
         public static final String COLUMN_NAME_MODE_REVISION  = "modeRev";

@@ -3,7 +3,6 @@ package fr.marzin.jacques.revlang;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -35,23 +34,12 @@ public class MotsActivity extends Activity {
         String cond2;
         final Cursor mCursor;
         if (theme_id > 0) {
-            cond2 = " AND " + MotContract.MotTable.COLUMN_NAME_THEME_ID + " = " + theme_id;
-            SQLiteDatabase db = maJmSession.getDb();
-            String sortOrder =
-                    MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR + " ASC";
-            String selection = MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2).toLowerCase() + "\"" +
-                    cond2;
-            mCursor = db.query(
-                    MotContract.MotTable.TABLE_NAME,
-                    null,
-                    selection,
-                    null,
-                    null,
-                    null,
-                    sortOrder
-            );
+            String[] arguments = {""+theme_id, };
+            mCursor = Mot.where(maJmSession.getDb(),
+                    "theme_id = " + theme_id + " and langue_id = \"" + langue.substring(0,2).toLowerCase() + "\"");
         } else {
-            mCursor = maJmSession.getCursor("Mots");
+            mCursor = Mot.where(maJmSession.getDb(),
+                    maJmSession.getSelection("Mots"));
         }
         ListAdapter adapter = new SimpleCursorAdapter(
                 this,

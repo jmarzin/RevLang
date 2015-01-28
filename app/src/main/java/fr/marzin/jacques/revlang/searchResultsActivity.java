@@ -140,7 +140,7 @@ public class searchResultsActivity extends Activity {
                 public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 
                     mCursor.moveToPosition(pos);
-                    maJmSession.setMotPos(pos);
+//                    maJmSession.setMotPos(pos);
                     int rowId = mCursor.getInt(mCursor.getColumnIndexOrThrow("_id"));
                     maJmSession.setMotId(rowId);
                     Intent intent = new Intent(getBaseContext(), MotActivity.class);

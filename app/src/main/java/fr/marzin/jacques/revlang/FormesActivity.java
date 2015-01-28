@@ -3,7 +3,6 @@ package fr.marzin.jacques.revlang;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
 import android.view.Menu;
@@ -40,14 +39,10 @@ public class FormesActivity extends Activity {
         String cond2;
         final Cursor mCursor;
         if (verbe_id > 0) {
-            cond2 = " AND " + FormeContract.FormeTable.COLUMN_NAME_VERBE_ID + " = " + verbe_id;
-            SQLiteDatabase db = maJmSession.getDb();
-            mCursor = db.rawQuery("select F._id, F.langue, V.langue as verbe from formes as F JOIN verbes as V ON F.verbe_id=V._id where F." +
-                    FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2).toLowerCase() + "\"" + cond2 +
-                    " ORDER BY V." + VerbeContract.VerbeTable.COLUMN_NAME_LANGUE + " ASC , F." +
-                    FormeContract.FormeTable.COLUMN_NAME_FORME_ID + " ASC", null);
+            mCursor = Forme.where(maJmSession.getDb(),
+                    "verbe_id = " + verbe_id + " and langue_id = \"" + langue.substring(0,2).toLowerCase() + "\"");
         } else {
-            mCursor = maJmSession.getCursor("Formes");
+            mCursor = Forme.where(maJmSession.getDb(),maJmSession.getSelection("Formes"));
         }
         ListAdapter adapter = new SimpleCursorAdapter(
             this,
@@ -59,7 +54,7 @@ public class FormesActivity extends Activity {
         ListView listView = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.listView2);
         listView.setAdapter(adapter);
         if (maJmSession.getFormeId() > 0) {
-            listView.setSelection(maJmSession.getFormePos());
+//            listView.setSelection(maJmSession.getFormePos());
             maJmSession.setFormeId(0);
         }
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.widget.Toast;
 
 /**
@@ -15,7 +16,10 @@ public class RetourServiceMaj extends BroadcastReceiver {
     public void onReceive (Context context, Intent intent) {
         Bundle extras = intent.getExtras();
         String message = extras.getString(MiseAJour.EXTRA_MESSAGE);
-        Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
+        int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(context, message, duration);
+        toast.setGravity(Gravity.TOP, 0, 0);
+        toast.show();
 
     }
 }

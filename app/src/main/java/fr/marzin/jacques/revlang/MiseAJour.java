@@ -1,15 +1,12 @@
 package fr.marzin.jacques.revlang;
 
 import android.app.IntentService;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,13 +25,6 @@ import java.util.Hashtable;
 
 import static java.util.Collections.max;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p/>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
 public class MiseAJour extends IntentService {
 
     private static final String ACTION_MAJ = "fr.marzin.jacques.revlang.action.MAJ";
@@ -51,10 +41,6 @@ public class MiseAJour extends IntentService {
     private String dateMajVocabulaire;
     private String dateMajConjugaisons;
     private int nombreMaj;
-    /**
-     * Starts this service to perform action MAJ with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     */
 
     public static void startActionMaj(Context context, String langue) {
         Intent intent = new Intent(context, MiseAJour.class);
@@ -162,7 +148,7 @@ public class MiseAJour extends IntentService {
         int nombreMots = tableMots.length();
         for (int i=0 ; i < nombreMots ; i++) {
             JSONArray mot = tableMots.optJSONArray(i);
-            majMot(mot,(int) tableId.get(mot.getInt(1)));
+            majMot(mot, (int) tableId.get(mot.getInt(1)));
         }
         db.execSQL("DELETE FROM " + ThemeContract.ThemeTable.TABLE_NAME +
             " WHERE " + ThemeContract.ThemeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2) + "\" AND " +
@@ -173,119 +159,53 @@ public class MiseAJour extends IntentService {
     }
 
     private int majCategorie(JSONArray categorie) throws JSONException {
-        Cursor mCursor;
-        String q = "SELECT * FROM " + ThemeContract.ThemeTable.TABLE_NAME +
-                " WHERE " + ThemeContract.ThemeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2) + "\"" +
+        String selection = ThemeContract.ThemeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2) + "\"" +
                 " AND " + ThemeContract.ThemeTable.COLUMN_NAME_DIST_ID + " = " + categorie.getInt(0);
-        mCursor = db.rawQuery(q, null);
-        int id;
-        if (!mCursor.moveToFirst()) {
-            mCursor.close();
-            nombreMaj += 1;
-            //
-            // on insère la nouvelle catégorie
-            //
-            ContentValues values = new ContentValues();
-            values.put(ThemeContract.ThemeTable.COLUMN_NAME_DIST_ID, (Integer) categorie.get(0));
-            values.put(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE_ID, langue.substring(0,2));
-            values.put(ThemeContract.ThemeTable.COLUMN_NAME_NUMERO, (Integer) categorie.get(1));
-            values.put(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE, (String) categorie.get(2));
-            values.put(ThemeContract.ThemeTable.COLUMN_NAME_DATE_MAJ ,dateMajVocabulaire);
-            long newRowId = db.insert(
-                    ThemeContract.ThemeTable.TABLE_NAME,
-                    null,
-                    values);
-            //
-            // on récupère l'id
-            //
-            mCursor = db.rawQuery(q, null);
-            mCursor.moveToFirst();
-            id = mCursor.getInt(mCursor.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_ID));
-            mCursor.close();
-        } else {
-            id = mCursor.getInt(mCursor.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_ID));
-            int numero = mCursor.getInt(mCursor.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_NUMERO));
-            String texte = mCursor.getString(mCursor.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE));
-            ContentValues values = new ContentValues();
-            if (numero != categorie.getInt(1) || !texte.equals(categorie.getString(2))) {
-                nombreMaj += 1;
-                values.put(ThemeContract.ThemeTable.COLUMN_NAME_NUMERO, categorie.getInt(1));
-                values.put(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE, categorie.getString(2));
-            }
-            values.put(ThemeContract.ThemeTable.COLUMN_NAME_DATE_MAJ, dateMajVocabulaire);
-            String selection = ThemeContract.ThemeTable.COLUMN_NAME_ID + " = " + id;
-            String[] selectionArgs = {};
-
-            int count = db.update(
-                    ThemeContract.ThemeTable.TABLE_NAME,
-                    values,
-                    selection,
-                    selectionArgs);
+        Theme theme = Theme.find_by(db,selection);
+        if (theme == null) {
+            theme = new Theme();
+            theme.dist_id = categorie.getInt(0);
+            theme.langue_id = langue.substring(0,2);
         }
-        return id;
+        if (theme.numero != categorie.getInt(1) || !theme.langue.equals(categorie.getString(2))) {
+            nombreMaj++;
+            theme.numero = categorie.getInt(1);
+            theme.langue = categorie.getString(2);
+        }
+        theme.date_maj = dateMajVocabulaire;
+        theme.save(db);
+        return theme._id;
     }
 
-    private void majMot (JSONArray mot, int theme_id) throws JSONException {
-        Cursor mCursor;
-        String q = "SELECT * FROM " + MotContract.MotTable.TABLE_NAME +
-                " WHERE " + MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2) + "\"" +
-                " AND " + MotContract.MotTable.COLUMN_NAME_DIST_ID + " = " + mot.get(0);
-        mCursor = db.rawQuery(q, null);
-        if (!mCursor.moveToFirst()) {
-            mCursor.close();
-            nombreMaj += 1;
-            //
-            // on insère la nouvelle catégorie
-            //
-            ContentValues values = new ContentValues();
-            values.put(MotContract.MotTable.COLUMN_NAME_THEME_ID, theme_id);
-            values.put(MotContract.MotTable.COLUMN_NAME_DIST_ID, mot.getInt(0));
-            values.put(MotContract.MotTable.COLUMN_NAME_FRANCAIS, mot.getString(2));
-            values.put(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR, mot.getString(3));
-            values.put(MotContract.MotTable.COLUMN_NAME_LANGUE_ID, langue.substring(0,2));
-            values.put(MotContract.MotTable.COLUMN_NAME_LANGUE, mot.getString(4));
-            if (mot.length() == 6) {
-                values.put(MotContract.MotTable.COLUMN_NAME_PRONONCIATION, mot.getString(5));
-            } else {
-                values.put(MotContract.MotTable.COLUMN_NAME_PRONONCIATION, "");
-            }
-            values.put(MotContract.MotTable.COLUMN_NAME_DATE_MAJ ,dateMajVocabulaire);
-            values.put(MotContract.MotTable.COLUMN_NAME_DATE_REV, "1900-01-01");
-            values.put(MotContract.MotTable.COLUMN_NAME_NB_ERR, 0);
-            values.put(MotContract.MotTable.COLUMN_NAME_POIDS,1);
-
-            long newRowId = db.insert(
-                    MotContract.MotTable.TABLE_NAME,
-                    null,
-                    values);
-        } else {
-            int id = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_ID));
-            String francais  = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_FRANCAIS));
-            String mot_directeur = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR));
-            String en_langue = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE));
-            String prononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_PRONONCIATION));
-            ContentValues values = new ContentValues();
-            if (!francais.equals(mot.getString(2)) || !mot_directeur.equals(mot.getString(3)) || !en_langue.equals(mot.getString(4))) {
-                nombreMaj += 1;
-                values.put(MotContract.MotTable.COLUMN_NAME_FRANCAIS, mot.getString(2));
-                values.put(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR, mot.getString(3));
-                values.put(MotContract.MotTable.COLUMN_NAME_LANGUE, mot.getString(4));
-            } else if (mot.length() == 6) {
-                values.put(MotContract.MotTable.COLUMN_NAME_PRONONCIATION, "");
-            } else if (!prononciation.equals(mot.getString(5))) {
-                nombreMaj += 1;
-                values.put(MotContract.MotTable.COLUMN_NAME_PRONONCIATION,mot.getString(5));
-            }
-            values.put(MotContract.MotTable.COLUMN_NAME_DATE_MAJ, dateMajVocabulaire);
-            String selection = MotContract.MotTable.COLUMN_NAME_ID + " = " + id;
-            String[] selectionArgs = {};
-
-            int count = db.update(
-                    MotContract.MotTable.TABLE_NAME,
-                    values,
-                    selection,
-                    selectionArgs);
+    private void majMot(JSONArray mot_dist, int theme_id) throws JSONException {
+        String selection = MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2) + "\"" +
+                " AND " + MotContract.MotTable.COLUMN_NAME_DIST_ID + " = " + mot_dist.get(0);
+        Mot mot = Mot.find_by(db,selection);
+        if (mot == null) {
+            mot = new Mot();
+            mot.dist_id = mot_dist.getInt(0);
+            mot.langue_id = langue.substring(0,2);
         }
+        if (mot.theme == null) {
+            mot.theme = new Theme();
+        }
+        mot.theme._id = theme_id;
+        Boolean modifie = false;
+        if (!mot.francais.equals(mot_dist.getString(2)) ||
+                !mot.mot_directeur.equals(mot_dist.getString(3)) ||
+                !mot.langue.equals(mot_dist.getString(4))) {
+            modifie = true;
+            mot.francais =  mot_dist.getString(2);
+            mot.mot_directeur = mot_dist.getString(3);
+            mot.langue = mot_dist.getString(4);
+        }
+        if (mot_dist.length() == 6 && !mot.prononciation.equals(mot_dist.getString(5))) {
+            modifie = true;
+            mot.prononciation = mot_dist.getString(5);
+        }
+        if (modifie) { nombreMaj++;}
+        mot.date_maj = dateMajVocabulaire;
+        mot.save(db);
     }
 
     private boolean besoinMajConjugaisons() {
@@ -333,7 +253,7 @@ public class MiseAJour extends IntentService {
         int nombreFormes = tableFormes.length();
         for (int i=0 ; i < nombreFormes ; i++) {
             JSONArray forme = tableFormes.optJSONArray(i);
-            majForme(forme,(int) tableId.get(forme.getInt(1)));
+            majForme(forme, (int) tableId.get(forme.getInt(1)));
         }
         db.execSQL("DELETE FROM " + VerbeContract.VerbeTable.TABLE_NAME +
                 " WHERE " + VerbeContract.VerbeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2) + "\" AND " +
@@ -343,115 +263,51 @@ public class MiseAJour extends IntentService {
                 FormeContract.FormeTable.COLUMN_NAME_DATE_MAJ + " <  \""+dateMajConjugaisons+"\"");
     }
 
-    private int majVerbe(JSONArray verbe) throws JSONException {
-        Cursor mCursor;
-        String q = "SELECT * FROM " + VerbeContract.VerbeTable.TABLE_NAME +
-                " WHERE " + VerbeContract.VerbeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2) + "\"" +
-                " AND " + VerbeContract.VerbeTable.COLUMN_NAME_DIST_ID + " = " + verbe.getInt(0);
-        mCursor = db.rawQuery(q, null);
-        int id;
-        if (!mCursor.moveToFirst()) {
-            mCursor.close();
-            nombreMaj += 1;
-            //
-            // on insère le nouveau verbe
-            //
-            ContentValues values = new ContentValues();
-            values.put(VerbeContract.VerbeTable.COLUMN_NAME_DIST_ID, (Integer) verbe.getInt(0));
-            values.put(VerbeContract.VerbeTable.COLUMN_NAME_LANGUE_ID, langue.substring(0,2));
-            values.put(VerbeContract.VerbeTable.COLUMN_NAME_LANGUE, (String) verbe.getString(1));
-            values.put(VerbeContract.VerbeTable.COLUMN_NAME_DATE_MAJ ,dateMajConjugaisons);
-            long newRowId = db.insert(
-                    VerbeContract.VerbeTable.TABLE_NAME,
-                    null,
-                    values);
-            //
-            // on récupère l'id
-            //
-            mCursor = db.rawQuery(q, null);
-            mCursor.moveToFirst();
-            id = mCursor.getInt(mCursor.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_ID));
-            mCursor.close();
-        } else {
-            id = mCursor.getInt(mCursor.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_ID));
-            String en_langue = mCursor.getString(mCursor.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_LANGUE));
-            ContentValues values = new ContentValues();
-            if (!en_langue.equals(verbe.getString(1))) {
-                nombreMaj += 1;
-                values.put(VerbeContract.VerbeTable.COLUMN_NAME_LANGUE, verbe.getString(1));
-            }
-            values.put(VerbeContract.VerbeTable.COLUMN_NAME_DATE_MAJ, dateMajVocabulaire);
-            String selection = VerbeContract.VerbeTable.COLUMN_NAME_ID + " = " + id;
-            String[] selectionArgs = {};
-
-            int count = db.update(
-                    VerbeContract.VerbeTable.TABLE_NAME,
-                    values,
-                    selection,
-                    selectionArgs);
+    private int majVerbe(JSONArray verbe_dist) throws JSONException {
+        String selection = VerbeContract.VerbeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2) + "\"" +
+                " AND " + VerbeContract.VerbeTable.COLUMN_NAME_DIST_ID + " = " + verbe_dist.getInt(0);
+        Verbe verbe = Verbe.find_by(db,selection);
+        if (verbe == null) {
+            verbe = new Verbe();
+            verbe.dist_id = verbe_dist.getInt(0);
+            verbe.langue_id = langue.substring(0,2);
         }
-        return id;
+        if (!verbe.langue.equals(verbe_dist.getString(1))) {
+            nombreMaj++;
+            verbe.langue = verbe_dist.getString(1);
+        }
+        verbe.date_maj = dateMajVocabulaire;
+        verbe.save(db);
+        return verbe._id;
     }
 
-    private void majForme (JSONArray forme, int verbe_id) throws JSONException {
-        Cursor mCursor;
-        String q = "SELECT * FROM " + FormeContract.FormeTable.TABLE_NAME +
-                " WHERE " + FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2) + "\"" +
-                " AND " + FormeContract.FormeTable.COLUMN_NAME_DIST_ID + " = " + forme.getInt(0);
-        mCursor = db.rawQuery(q, null);
-        if (!mCursor.moveToFirst()) {
-            mCursor.close();
-            nombreMaj += 1;
-            //
-            // on insère la nouvelle forme
-            //
-            Log.v("Test",forme.getString(3));
-            ContentValues values = new ContentValues();
-            values.put(FormeContract.FormeTable.COLUMN_NAME_VERBE_ID, verbe_id);
-            values.put(FormeContract.FormeTable.COLUMN_NAME_DIST_ID, forme.getInt(0));
-            values.put(FormeContract.FormeTable.COLUMN_NAME_FORME_ID, forme.getString(2));
-            values.put(FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID, langue.substring(0, 2));
-            values.put(FormeContract.FormeTable.COLUMN_NAME_LANGUE, forme.getString(3));
-            values.put(FormeContract.FormeTable.COLUMN_NAME_DATE_MAJ ,dateMajConjugaisons);
-            values.put(FormeContract.FormeTable.COLUMN_NAME_DATE_REV, "1900-01-01");
-            values.put(FormeContract.FormeTable.COLUMN_NAME_NB_ERR, 0);
-            values.put(FormeContract.FormeTable.COLUMN_NAME_POIDS,1);
-            if (forme.length() == 5) {
-                values.put(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION, forme.getString(4));
-            } else {
-                values.put(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION, "");
-            }
-
-            long newRowId = db.insert(
-                    FormeContract.FormeTable.TABLE_NAME,
-                    null,
-                    values);
-        } else {
-            int id = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_ID));
-            int forme_id  = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_FORME_ID));
-            String prononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION));
-            String en_langue = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_LANGUE));
-            ContentValues values = new ContentValues();
-            if (forme_id != forme.getInt(2) || !en_langue.equals(forme.getString(3))) {
-                nombreMaj += 1;
-                values.put(FormeContract.FormeTable.COLUMN_NAME_FORME_ID, forme.getString(2));
-                values.put(FormeContract.FormeTable.COLUMN_NAME_LANGUE, forme.getString(3));
-            } else if (forme.length() == 5) {
-                values.put(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION, "");
-            } else if (!prononciation.equals(forme.getString(4))) {
-                nombreMaj += 1;
-                values.put(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION, forme.getString(4));
-            }
-            values.put(FormeContract.FormeTable.COLUMN_NAME_DATE_MAJ, dateMajConjugaisons);
-            String selection = FormeContract.FormeTable.COLUMN_NAME_ID + " = " + id;
-            String[] selectionArgs = {};
-
-            int count = db.update(
-                    FormeContract.FormeTable.TABLE_NAME,
-                    values,
-                    selection,
-                    selectionArgs);
+    private void majForme(JSONArray forme_dist, int verbe_id) throws JSONException {
+        String selection = FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0,2) + "\"" +
+                " AND " + FormeContract.FormeTable.COLUMN_NAME_DIST_ID + " = " + forme_dist.getInt(0);
+        Forme forme = Forme.find_by(db,selection);
+        if (forme == null) {
+            forme = new Forme();
+            forme.dist_id = forme_dist.getInt(0);
+            forme.langue_id = langue.substring(0,2);
         }
+        if (forme.verbe == null) {
+            forme.verbe = new Verbe();
+        }
+        Boolean modifie = false;
+        forme.verbe._id = verbe_id;
+        if (forme.forme_id != forme_dist.getInt(2) ||
+                !forme.langue.equals(forme_dist.getString(3))) {
+            modifie = true;
+            forme.forme_id = forme_dist.getInt(2);
+            forme.langue = forme_dist.getString(3);
+        }
+        if (forme_dist.length() == 5 && !forme.prononciation.equals(forme_dist.getString(4))) {
+            modifie = true;
+            forme.prononciation = forme_dist.getString(4);
+        }
+        if (modifie) {nombreMaj++;}
+        forme.date_maj = dateMajConjugaisons;
+        forme.save(db);
     }
 
     private String lectureGet(String url) {

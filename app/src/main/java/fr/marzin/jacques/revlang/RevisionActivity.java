@@ -19,7 +19,7 @@ import java.util.Random;
 public class RevisionActivity extends Activity {
 
     public JmSession maJmSession;
-    public Hashtable question;
+    public Question question;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,8 +140,8 @@ public class RevisionActivity extends Activity {
         TextView mtexteReponse = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.texteReponse);
         EditText mReponse = (EditText) findViewById(fr.marzin.jacques.revlang.R.id.reponse);
         TableLayout mzoneQuestion = (TableLayout) findViewById(fr.marzin.jacques.revlang.R.id.zoneQuestion);
-        question = maJmSession.question();
-        if (question == null) {
+        question = new Question(maJmSession);
+        if (question.item == null) {
             mBravo.setText("Plus de questions !");
             mBravo.setTextColor(0xFF000000);
             mligne1.setText("");
@@ -150,8 +150,8 @@ public class RevisionActivity extends Activity {
             mBouton.setVisibility(View.INVISIBLE);
         } else {
             mBravo.setText("");
-            mligne1.setText((String) question.get("ligne1"));
-            mligne2.setText((String) question.get("ligne2"));
+            mligne1.setText((String) question.ligne1);
+            mligne2.setText((String) question.ligne2);
             mBouton.setText("Vérifier");
             mtexteReponse.setText("");
             mReponse.setText("");
@@ -163,20 +163,20 @@ public class RevisionActivity extends Activity {
 
         if (mBouton.getText().equals("Vérifier")) {
             TextView mtexteReponse = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.texteReponse);
-            String texte = question.get("reponse").toString();
+            String texte = question.item.langue;
 
-            if (!question.get("prononciation").toString().equals("")) {
-                texte += " [" + question.get("prononciation").toString() + "]";
+            if (!question.item.prononciation.equals("")) {
+                texte += " [" + question.item.prononciation + "]";
             }
             int nouveauPoids;
             EditText mReponse = (EditText) findViewById(fr.marzin.jacques.revlang.R.id.reponse);
             maJmSession.setNbQuestions(maJmSession.getNbQuestions() + 1);
-            if (egalite(mReponse.getText().toString(),question.get("reponse").toString())) {
+            if (egalite(mReponse.getText().toString(),question.item.langue)) {
                 TextView mBravo = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.bravoOuEchec);
                 mBravo.setText("Bravo !");
                 mBravo.setTextColor(0xFE04CB05);
                 mtexteReponse.setTextColor(0xFE04CB05);
-                nouveauPoids = maJmSession.reduit(question);
+                nouveauPoids = question.item.reduit(maJmSession);
 
             } else {
                 maJmSession.setNbErreurs(maJmSession.getNbErreurs() + 1);
@@ -184,7 +184,7 @@ public class RevisionActivity extends Activity {
                 mBravo.setText("Erreur !");
                 mBravo.setTextColor(0xFECB0403);
                 mtexteReponse.setTextColor(0xFECB0403);
-                nouveauPoids = maJmSession.augmente(question);
+                nouveauPoids = question.item.augmente(maJmSession);
             }
             texte += " (" + nouveauPoids + ")";
             mtexteReponse.setText(eclate(texte));
