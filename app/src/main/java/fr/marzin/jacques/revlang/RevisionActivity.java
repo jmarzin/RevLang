@@ -2,6 +2,7 @@ package fr.marzin.jacques.revlang;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -12,42 +13,56 @@ import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.Random;
 
 
 public class RevisionActivity extends Activity {
 
-    public JmSession maJmSession;
+    public SQLiteDatabase db;
+    public Session session;
     public Question question;
+    public Random aleatoire;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_revision);
-    }
+        MyDbHelper dbManager = new MyDbHelper(getBaseContext());
+        db = dbManager.getWritableDatabase();
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        maJmSession = new JmSession(null,getBaseContext());
-        String langue = maJmSession.getLangue();
-        if (langue.equals("Italien")) {
+        if (session.langue.equals("Italien")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-        } else {
+        } else if (session.langue.equals("Anglais")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
+        } else if (session.langue.equals("Espagnol")) {
+            getActionBar().setIcon(R.drawable.espagnol);
+        } else {
+            getActionBar().setIcon(R.drawable.lingvo);
         }
+
         this.setTitle("Révision");
-        maJmSession.initRevision();
-        if (JmSession.aleatoire == null) {
-            JmSession.aleatoire = new Random();
+        Utilitaires.initRevision(db, session);
+        if (aleatoire == null) {
+            aleatoire = new Random();
         }
         poseQuestion();
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
+    }
+
+    @Override
     protected void onPause() {
-        maJmSession.save();
+        session.save(db);
         super.onResume();
     }
 
@@ -72,29 +87,34 @@ public class RevisionActivity extends Activity {
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_mots:
                 intent = new Intent(this, MotsActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_verbes:
                 intent = new Intent(this, VerbesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_formes:
                 intent = new Intent(this, FormesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_statistiques:
+                intent = new Intent(this, StatsActivity.class);
                 startActivity(intent);
                 finish();
                 return true;
@@ -121,13 +141,14 @@ public class RevisionActivity extends Activity {
 
     private void ajusteSousTitre() {
         String sousTitre = "";
-        if (maJmSession.getNbQuestions() > 0) {
-            sousTitre += maJmSession.getNbErreurs() + " " + pluralize("erreur", maJmSession.getNbErreurs()) +
-                    ", " + maJmSession.getNbQuestions() + " " + pluralize("question", maJmSession.getNbQuestions()) +
-                    " (" + maJmSession.getNbErreurs() * 100 / maJmSession.getNbQuestions() + " %), ";
+        if (session.nbQuestions > 0) {
+            sousTitre += session.nbErreurs + " " + pluralize("erreur", session.nbErreurs) +
+                    ", " + session.nbQuestions + " " + pluralize("question", session.nbQuestions) +
+                    " (" + session.nbErreurs * 100 / session.nbQuestions + " %), ";
         }
-        sousTitre += pluralize("reste", maJmSession.getNbTermesListe()) + " " + maJmSession.getNbTermesListe() + "(" +
-                maJmSession.getTailleListe() + ")";
+        int nbTermesListe = session.getNbTermesListe();
+        sousTitre += pluralize("reste", nbTermesListe) + " " + nbTermesListe + "(" +
+                session.liste.size() + ")";
         getActionBar().setSubtitle(sousTitre);
     }
 
@@ -140,7 +161,7 @@ public class RevisionActivity extends Activity {
         TextView mtexteReponse = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.texteReponse);
         EditText mReponse = (EditText) findViewById(fr.marzin.jacques.revlang.R.id.reponse);
         TableLayout mzoneQuestion = (TableLayout) findViewById(fr.marzin.jacques.revlang.R.id.zoneQuestion);
-        question = new Question(maJmSession);
+        question = new Question(db,session,aleatoire);
         if (question.item == null) {
             mBravo.setText("Plus de questions !");
             mBravo.setTextColor(0xFF000000);
@@ -170,21 +191,23 @@ public class RevisionActivity extends Activity {
             }
             int nouveauPoids;
             EditText mReponse = (EditText) findViewById(fr.marzin.jacques.revlang.R.id.reponse);
-            maJmSession.setNbQuestions(maJmSession.getNbQuestions() + 1);
+            session.nbQuestions++;
             if (egalite(mReponse.getText().toString(),question.item.langue)) {
                 TextView mBravo = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.bravoOuEchec);
                 mBravo.setText("Bravo !");
                 mBravo.setTextColor(0xFE04CB05);
                 mtexteReponse.setTextColor(0xFE04CB05);
-                nouveauPoids = question.item.reduit(maJmSession);
+                nouveauPoids = question.item.reduit(db,session);
+                majStats(1,0);
 
             } else {
-                maJmSession.setNbErreurs(maJmSession.getNbErreurs() + 1);
+                session.nbErreurs++;
                 TextView mBravo = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.bravoOuEchec);
                 mBravo.setText("Erreur !");
                 mBravo.setTextColor(0xFECB0403);
                 mtexteReponse.setTextColor(0xFECB0403);
-                nouveauPoids = question.item.augmente(maJmSession);
+                nouveauPoids = question.item.augmente(db,session);
+                majStats(1,1);
             }
             texte += " (" + nouveauPoids + ")";
             mtexteReponse.setText(eclate(texte));
@@ -214,5 +237,31 @@ public class RevisionActivity extends Activity {
             texte_eclate += " o\n"+tableau[i];
         }
         return texte_eclate;
+    }
+
+    public void majStats(int nbQuestions, int nbErreurs) {
+        Timestamp date = new Timestamp(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dateCourante = sdf.format(date);
+
+        String cond = StatsContract.StatsTable.COLUMN_NAME_LANGUE_ID + " = \"" + session.langue.substring(0,2).toLowerCase() + "\"";
+        cond += " AND " + StatsContract.StatsTable.COLUMN_NAME_DATE + " = \"" + dateCourante + "\"";
+        Stats stats = Stats.find_by(db,cond);
+
+        if (stats == null) {
+            stats = new Stats();
+            stats.date_rev = dateCourante;
+            stats.langue_id = session.langue.substring(0,2).toLowerCase();
+        }
+
+        if (session.modeRevision.equals("Vocabulaire")) {
+            stats.nb_questions_mots += nbQuestions;
+            stats.nb_erreurs_mots += nbErreurs;
+        } else {
+            stats.nb_questions_formes += nbQuestions;
+            stats.nb_erreurs_formes += nbErreurs;
+        }
+
+        stats.save(db);
     }
 }

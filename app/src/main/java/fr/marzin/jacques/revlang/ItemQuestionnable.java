@@ -24,7 +24,7 @@ abstract class ItemQuestionnable extends TermeBase {
         this.date_rev = sdf.format(date);
     }
 
-    public int reduit(JmSession maJmSession) {
+    public int reduit(SQLiteDatabase db, Session session) {
         majDateRev();
         int nRemove;
         int nouveauPoids;
@@ -36,28 +36,28 @@ abstract class ItemQuestionnable extends TermeBase {
             nRemove = poids - nouveauPoids;
         }
         for (int i=0 ; i < nRemove ; i++) {
-            maJmSession.getListe().remove((Integer) _id);
+            session.liste.remove((Integer) _id);
         }
-        if (maJmSession.getErrMin() > 0 && nb_err > 0) {
+        if (session.errMin > 0 && nb_err > 0) {
             nb_err -= 1;
         }
         poids = nouveauPoids;
-        this.save(maJmSession.getDb());
-        maJmSession.majStats(1, 0);
+        this.save(db);
+//        maJmSession.majStats(1, 0);
         return nouveauPoids;
     }
 
-    public int augmente(JmSession maJmSession) {
+    public int augmente(SQLiteDatabase db, Session session) {
         majDateRev();
         int nouveauPoids = poids*2;
         int nAjout = nouveauPoids - poids;
         for (int i=0 ; i < nAjout ; i++) {
-                maJmSession.getListe().add((Integer) _id);
+                session.liste.add((Integer) _id);
         }
         nb_err += 1;
         poids = nouveauPoids;
-        this.save(maJmSession.getDb());
-        maJmSession.majStats(1, 1);
+        this.save(db);
+//        maJmSession.majStats(1, 1);
         return nouveauPoids;
     }
 }

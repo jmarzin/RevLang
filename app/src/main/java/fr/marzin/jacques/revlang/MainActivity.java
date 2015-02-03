@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -17,34 +18,43 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-    public JmSession maJmSession;
+    public SQLiteDatabase db;
+    public Session session;
     public Toast message;
+    public Boolean dejaMaj;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle("RevLang");
+        dejaMaj = false;
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_main);
         Context context = getApplicationContext();
         String text = getString(fr.marzin.jacques.revlang.R.string.erreurChoixLangue);
         int duration = Toast.LENGTH_LONG;
         message = Toast.makeText(context, text, duration);
         message.setGravity(Gravity.TOP, 0, 0);
+        MyDbHelper dbManager = new MyDbHelper(getBaseContext());
+        db = dbManager.getWritableDatabase();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        maJmSession = new JmSession(null,getBaseContext());
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
+        if (session == null) {
+            session = new Session();
+            session.langue = getString(fr.marzin.jacques.revlang.R.string.titre_langue);
+        }
         TextView mTexteLangue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue);
-        mTexteLangue.setText(maJmSession.getLangue());
+        mTexteLangue.setText(session.langue);
     }
 
     @Override
     protected void onPause() {
-        maJmSession.save();
+        session.save(db);
         super.onPause();
     }
 
@@ -76,10 +86,15 @@ public class MainActivity extends Activity {
         if (mTexteLangue.getText().equals(langue)) {
             return;
         } else {
-            maJmSession.setDerniereSession(false);
-            maJmSession.save();
-            maJmSession = new JmSession(langue,getBaseContext());
-            JmSession.dejaMaj = false;
+            session.derniereSession = 0;
+            session.save(db);
+            String selection = SessionContract.SessionTable.COLUMN_NAME_LANGUE + " = \"" + langue + "\"";
+            session = Session.find_by(db, selection);
+            if (session == null) {
+                session = new Session();
+                session.langue = langue;
+            }
+            dejaMaj = false;
             mTexteLangue.setText(langue);
         }
     }
@@ -90,6 +105,14 @@ public class MainActivity extends Activity {
 
     public void clickDrapeauAnglais(View view) {
         changeLangue(getString(fr.marzin.jacques.revlang.R.string.Anglais));
+    }
+
+    public void clickDrapeauEspagnol(View view) {
+        changeLangue(getString(fr.marzin.jacques.revlang.R.string.Espagnol));
+    }
+
+    public void clickDrapeauLingvo(View view) {
+        changeLangue(getString(fr.marzin.jacques.revlang.R.string.Lingvo));
     }
 
     private boolean Oklangue() {
@@ -104,9 +127,9 @@ public class MainActivity extends Activity {
     }
 
     public void lanceActivite(Intent intent) {
-        if (!JmSession.dejaMaj) {
-            JmSession.dejaMaj = true;
-            MiseAJour.startActionMaj(getBaseContext(), maJmSession.getLangue());
+        if (!dejaMaj) {
+            dejaMaj = true;
+            MiseAJour.startActionMaj(getBaseContext(), session.langue);
         }
         startActivity(intent);
     }
@@ -114,8 +137,8 @@ public class MainActivity extends Activity {
     public void clickThemes(View view) {
         if (Oklangue()) {
             Intent intent = new Intent(this, ThemesActivity.class);
-            maJmSession.setThemeId(0);
-            maJmSession.setMotId(0);
+            session.themeId = 0;
+            session.motId = 0;
             lanceActivite(intent);
         }
     }
@@ -123,8 +146,8 @@ public class MainActivity extends Activity {
     public void clickMots(View view) {
         if (Oklangue()) {
             Intent intent = new Intent(this, MotsActivity.class);
-            maJmSession.setThemeId(0);
-            maJmSession.setMotId(0);
+            session.themeId = 0;
+            session.motId = 0;
             lanceActivite(intent);
         }
     }
@@ -132,8 +155,8 @@ public class MainActivity extends Activity {
     public void clickVerbes(View view) {
         if (Oklangue()) {
             Intent intent = new Intent(this, VerbesActivity.class);
-            maJmSession.setVerbeId(0);
-            maJmSession.setFormeId(0);
+            session.verbeId = 0;
+            session.formeId = 0;
             lanceActivite(intent);
         }
     }
@@ -141,8 +164,8 @@ public class MainActivity extends Activity {
     public void clickFormes(View view) {
         if (Oklangue()) {
             Intent intent = new Intent(this, FormesActivity.class);
-            maJmSession.setVerbeId(0);
-            maJmSession.setFormeId(0);
+            session.verbeId = 0;
+            session.formeId = 0;
             lanceActivite(intent);
         }
     }
@@ -150,6 +173,13 @@ public class MainActivity extends Activity {
     public void clickRevision(View view) {
         if (Oklangue()) {
             Intent intent = new Intent(this, RevisionActivity.class);
+            lanceActivite(intent);
+        }
+    }
+
+    public void clickStatistiques(View view) {
+        if (Oklangue()) {
+            Intent intent = new Intent(this, StatsActivity.class);
             lanceActivite(intent);
         }
     }
@@ -162,11 +192,11 @@ public class MainActivity extends Activity {
     }
 
     public void clickQuitter(View view) {
-        if (maJmSession.getConserveStats() == 0) {
-            maJmSession.setNbQuestions(0);
-            maJmSession.setNbErreurs(0);
+        if (session.conserveStats == 0) {
+            session.nbQuestions = 0;
+            session.nbErreurs = 0;
         }
-        JmSession.dejaMaj = false;
+        dejaMaj = false;
         finish();
     }
 }

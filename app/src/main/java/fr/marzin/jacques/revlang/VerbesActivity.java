@@ -17,22 +17,32 @@ import android.widget.SimpleCursorAdapter;
 
 public class VerbesActivity extends Activity {
 
-    public JmSession maJmSession;
+    public SQLiteDatabase db;
+    public Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_verbes);
-        maJmSession = new JmSession(null,getBaseContext());
-        String langue = maJmSession.getLangue();
-        if (langue.equals("Italien")) {
+
+        MyDbHelper dbManager = new MyDbHelper(getBaseContext());
+        db = dbManager.getWritableDatabase();
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
+
+        if (session.langue.equals("Italien")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-        } else {
+        } else if (session.langue.equals("Anglais")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
+        } else if (session.langue.equals("Espagnol")) {
+            getActionBar().setIcon(R.drawable.espagnol);
+        } else {
+            getActionBar().setIcon(R.drawable.lingvo);
         }
+
         this.setTitle("Verbes");
 
-        final Cursor mCursor = Verbe.where(maJmSession.getDb(),"langue_id = \"" + langue.substring(0,2).toLowerCase() + "\"");
+        final Cursor mCursor = Verbe.where(db,"langue_id = \"" + session.langue.substring(0,2).toLowerCase() + "\"");
 
         ListAdapter adapter = new SimpleCursorAdapter(
                 this,
@@ -49,7 +59,7 @@ public class VerbesActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
                 mCursor.moveToPosition(pos);
                 int rowId = mCursor.getInt(mCursor.getColumnIndexOrThrow("_id"));
-                maJmSession.setVerbeId(rowId);
+                session.verbeId = rowId;
                 Intent intent = new Intent(getBaseContext(), FormesActivity.class);
                 startActivity(intent);
             }
@@ -59,12 +69,13 @@ public class VerbesActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        maJmSession = new JmSession(null,getBaseContext());
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
     }
 
     @Override
     protected void onPause() {
-        maJmSession.save();
+        session.save(db);
         super.onPause();
     }
 
@@ -84,27 +95,32 @@ public class VerbesActivity extends Activity {
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_mots:
                 intent = new Intent(this, MotsActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_formes:
                 intent = new Intent(this, FormesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_revision:
                 intent = new Intent(this, RevisionActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_statistiques:
+                intent = new Intent(this, StatsActivity.class);
                 startActivity(intent);
                 finish();
                 return true;

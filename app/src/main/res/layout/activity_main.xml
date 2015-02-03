@@ -10,65 +10,97 @@
     android:focusable="false"
     android:showDividers="middle">
 
-    <TableLayout
-        android:layout_width="fill_parent"
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:stretchColumns="1,2"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp">
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/titre_langue"
+        android:id="@+id/t_langue"
+        android:elegantTextHeight="false"
+        android:textStyle="bold"
+        android:textSize="@dimen/abc_text_size_title_material"
+        android:paddingTop="@dimen/abc_action_bar_default_padding_material"
+        android:gravity="center_horizontal"
+        android:paddingBottom="10dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/titre_langue"
-            android:id="@+id/t_langue"
-            android:elegantTextHeight="false"
-            android:textStyle="bold"
-            android:textSize="@dimen/abc_text_size_title_material"
-            android:paddingTop="@dimen/abc_action_bar_default_padding_material"
-            android:gravity="center_horizontal"
-            android:paddingBottom="10dp" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+        <Space
+            android:layout_width="20px"
+            android:layout_height="20px"
+            android:layout_weight="1" />
 
-            <ImageButton
-                android:layout_width="@dimen/taille_drap"
-                android:layout_height="@dimen/taille_drap"
-                android:id="@+id/im_italien"
-                android:contentDescription="@string/Italien"
-                android:src="@drawable/italien"
-                android:cropToPadding="false"
-                android:baselineAlignBottom="false"
-                android:scaleType="fitCenter"
-                android:background="#00ffffff"
-                android:clickable="true"
-                android:layout_column="1"
-                android:layout_gravity="right"
-                android:adjustViewBounds="true"
-                android:paddingRight="@dimen/demiEcartDrap"
-                android:onClick="clickDrapeauItalien"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/taille_drap"
+            android:id="@+id/im_italien"
+            android:contentDescription="@string/Italien"
+            android:src="@drawable/italien"
+            android:cropToPadding="false"
+            android:baselineAlignBottom="false"
+            android:background="#00ffffff"
+            android:clickable="true"
+            android:adjustViewBounds="false"
+            android:onClick="clickDrapeauItalien"
+            android:layout_column="1"
+            android:layout_span="1"
+            android:layout_weight="1"
+            android:layout_gravity="right" />
 
-            <ImageButton
-                android:layout_width="@dimen/taille_drap"
-                android:layout_height="@dimen/taille_drap"
-                android:id="@+id/im_anglais"
-                android:contentDescription="@string/Anglais"
-                android:cropToPadding="false"
-                android:clickable="true"
-                android:src="@drawable/anglais"
-                android:scaleType="fitCenter"
-                android:background="#00ffffff"
-                android:layout_column="2"
-                android:adjustViewBounds="true"
-                android:layout_gravity="left"
-                android:paddingLeft="@dimen/demiEcartDrap"
-                android:onClick="clickDrapeauAnglais"/>
-        </TableRow>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/taille_drap"
+            android:id="@+id/im_anglais"
+            android:contentDescription="@string/Anglais"
+            android:cropToPadding="false"
+            android:clickable="true"
+            android:src="@drawable/anglais"
+            android:background="#00ffffff"
+            android:adjustViewBounds="true"
+            android:onClick="clickDrapeauAnglais"
+            android:layout_column="2"
+            android:layout_span="1"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1" />
 
-    </TableLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/taille_drap"
+            android:id="@+id/im_espagnol"
+            android:adjustViewBounds="true"
+            android:background="#00ffffff"
+            android:clickable="true"
+            android:contentDescription="@string/Espagnol"
+            android:onClick="clickDrapeauEspagnol"
+            android:src="@drawable/espagnol"
+            android:layout_column="3"
+            android:layout_span="1"
+            android:layout_weight="1"
+            android:layout_gravity="center_horizontal" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/taille_drap"
+            android:id="@+id/im_lingvo"
+            android:adjustViewBounds="true"
+            android:background="#00ffffff"
+            android:clickable="true"
+            android:contentDescription="@string/Lingvo"
+            android:onClick="clickDrapeauLingvo"
+            android:src="@drawable/lingvo"
+            android:layout_column="3"
+            android:layout_span="1"
+            android:layout_weight="1"
+            android:layout_gravity="left" />
+
+        <Space
+            android:layout_width="20px"
+            android:layout_height="20px"
+            android:layout_weight="1" />
+    </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -135,6 +167,18 @@
             android:onClick="clickRevision"
             android:textColor="#fe000000"
             android:visibility="visible" />
+
+        <Button
+            style="@android:style/Widget.DeviceDefault.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/statistiques"
+            android:id="@+id/b_statistiques"
+            android:singleLine="true"
+            android:gravity="center_vertical|left"
+            android:paddingStart="@dimen/taille_drap"
+            android:onClick="clickStatistiques"
+            android:textColor="#fe000000"/>
 
         <Button
             style="@android:style/Widget.DeviceDefault.Button.Borderless"

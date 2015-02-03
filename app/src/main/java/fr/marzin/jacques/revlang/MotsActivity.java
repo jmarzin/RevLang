@@ -3,6 +3,7 @@ package fr.marzin.jacques.revlang;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -16,30 +17,37 @@ import android.widget.SimpleCursorAdapter;
 
 public class MotsActivity extends Activity {
 
-    public JmSession maJmSession;
+    public SQLiteDatabase db;
+    public Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_mots);
-        maJmSession = new JmSession(null,getBaseContext());
-        String langue = maJmSession.getLangue();
-        if (langue.equals("Italien")) {
+
+        MyDbHelper dbManager = new MyDbHelper(getBaseContext());
+        db = dbManager.getWritableDatabase();
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
+
+        if (session.langue.equals("Italien")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-        } else {
+        } else if (session.langue.equals("Anglais")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
-        }
-        this.setTitle("Mots");
-        int theme_id = maJmSession.getThemeId();
-        String cond2;
-        final Cursor mCursor;
-        if (theme_id > 0) {
-            String[] arguments = {""+theme_id, };
-            mCursor = Mot.where(maJmSession.getDb(),
-                    "theme_id = " + theme_id + " and langue_id = \"" + langue.substring(0,2).toLowerCase() + "\"");
+        } else if (session.langue.equals("Espagnol")) {
+            getActionBar().setIcon(R.drawable.espagnol);
         } else {
-            mCursor = Mot.where(maJmSession.getDb(),
-                    maJmSession.getSelection("Mots"));
+            getActionBar().setIcon(R.drawable.lingvo);
+        }
+
+        this.setTitle("Mots");
+        final Cursor mCursor;
+        if (session.themeId > 0) {
+            String[] arguments = {""+session.themeId, };
+            mCursor = Mot.where(db,
+                    "theme_id = " + session.themeId + " and langue_id = \"" + session.langue.substring(0,2).toLowerCase() + "\"");
+        } else {
+            mCursor = Mot.where(db,Utilitaires.getSelection(session,"Mots"));
         }
         ListAdapter adapter = new SimpleCursorAdapter(
                 this,
@@ -54,7 +62,7 @@ public class MotsActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
                 mCursor.moveToPosition(pos);
                 int rowId = mCursor.getInt(mCursor.getColumnIndexOrThrow("_id"));
-                maJmSession.setMotId(rowId);
+                session.motId = rowId;
                 Intent intent = new Intent(getBaseContext(), MotActivity.class);
                 startActivity(intent);
             }
@@ -64,12 +72,13 @@ public class MotsActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        maJmSession = new JmSession(null,getBaseContext());
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
     }
 
     @Override
     protected void onPause() {
-        maJmSession.save();
+        session.save(db);
         super.onPause();
     }
 
@@ -89,27 +98,32 @@ public class MotsActivity extends Activity {
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_verbes:
                 intent = new Intent(this, VerbesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_formes:
                 intent = new Intent(this, FormesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_revision:
                 intent = new Intent(this, RevisionActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_statistiques:
+                intent = new Intent(this, StatsActivity.class);
                 startActivity(intent);
                 finish();
                 return true;

@@ -2,4 +2,7 @@
 <resources>
     <item name="text1" type="id">text1</item>
     <item name="text2" type="id">text2</item>
+    <item name="text3" type="id">text3</item>
+    <item name="text4" type="id">text4</item>
+    <item name="text5" type="id">text5</item>
 </resources>

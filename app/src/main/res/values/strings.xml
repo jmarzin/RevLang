@@ -10,6 +10,7 @@
     <string name="action_verbes">Verbes</string>
     <string name="action_formes">Formes</string>
     <string name="action_revision">Révision</string>
+    <string name="action_statistiques">Statistiques</string>
     <string name="action_parametrage">Paramétrage</string>
     <string name="action_quitter">Quitter</string>
     <string name="themes">Thèmes</string>
@@ -17,16 +18,20 @@
     <string name="verbes">Verbes</string>
     <string name="formes">Formes verbales</string>
     <string name="revision">Révision</string>
+    <string name="statistiques">Statistiques</string>
     <string name="parametrage">Paramétrage</string>
     <string name="quitter">Quitter</string>
     <string name="Italien">Italien</string>
     <string name="Anglais">Anglais</string>
+    <string name="Espagnol">Espagnol</string>
+    <string name="Lingvo">Lingvo</string>
     <string name="titre_langue">Choisissez votre langue</string>
     <string name="title_activity_theme">Thèmes</string>
     <string name="title_activity_mots">Mots</string>
     <string name="title_activity_verbes">Verbes</string>
     <string name="title_activity_formes">Formes</string>
     <string name="title_activity_revision">Révision</string>
+    <string name="title_activity_statistiques">Statistiques</string>
     <string name="title_activity_parametrage">Paramétrage</string>
     <string name="title_activity_main">RevLang</string>
     <string name="title_activity_themes">ThemesActivity</string>
@@ -67,5 +72,11 @@
     <string name="l_forme_id">Forme</string>
     <string name="title_activity_search_results">searchResultsActivity</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_stats">StatsActivity</string>
+    <string name="t_date">Date</string>
+    <string name="t_nbQuestionsMots">Q/M</string>
+    <string name="t_nbErreursMots">E/M</string>
+    <string name="t_nbQuestionsFormes">Q/F</string>
+    <string name="t_nbErreursFormes">E/F</string>
 
 </resources>

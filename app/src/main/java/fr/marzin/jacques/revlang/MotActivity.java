@@ -14,27 +14,36 @@ import android.widget.TextView;
 
 public class MotActivity extends Activity {
 
-    public JmSession maJmSession;
+    public SQLiteDatabase db;
+    public Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_mot);
-        maJmSession = new JmSession(null,getBaseContext());
-        String langue = maJmSession.getLangue();
-        if (langue.equals("Italien")) {
+
+        MyDbHelper dbManager = new MyDbHelper(getBaseContext());
+        db = dbManager.getWritableDatabase();
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
+
+        if (session.langue.equals("Italien")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-        } else {
+        } else if (session.langue.equals("Anglais")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
+        } else if (session.langue.equals("Espagnol")) {
+            getActionBar().setIcon(R.drawable.espagnol);
+        } else {
+            getActionBar().setIcon(R.drawable.lingvo);
         }
+
         this.setTitle("Mot");
-        int mot_id = maJmSession.getMotId();
-        Mot mot = Mot.find(maJmSession.getDb(),mot_id);
+        Mot mot = Mot.find(db,session.motId);
 
         TextView t_id = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_id);
-        t_id.setText(""+mot_id);
+        t_id.setText(""+session.motId);
         TextView l_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.l_langue);
-        l_langue.setText("en "+langue);
+        l_langue.setText("en "+session.langue);
 
         if (mot != null) {
 
@@ -81,12 +90,13 @@ public class MotActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        maJmSession = new JmSession(null,getBaseContext());
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
     }
 
     @Override
     protected void onPause() {
-        maJmSession.save();
+        session.save(db);
         super.onPause();
     }
 
@@ -105,27 +115,32 @@ public class MotActivity extends Activity {
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_verbes:
                 intent = new Intent(this, VerbesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_formes:
                 intent = new Intent(this, FormesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_revision:
                 intent = new Intent(this, RevisionActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_statistiques:
+                intent = new Intent(this, StatsActivity.class);
                 startActivity(intent);
                 finish();
                 return true;

@@ -10,6 +10,8 @@
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_formes" android:title="@string/action_formes"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_statistiques" android:title="@string/action_statistiques"
+        android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_parametrage" android:title="@string/action_parametrage"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

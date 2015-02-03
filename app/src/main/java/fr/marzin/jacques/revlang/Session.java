@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by jacques on 27/01/15.
@@ -138,5 +140,10 @@ public class Session {
         }
         mCursor.close();
         return session;
+    }
+
+    public int getNbTermesListe() {
+        Set<Integer> uniqueListe = new HashSet<Integer>(this.liste);
+        return uniqueListe.size();
     }
 }

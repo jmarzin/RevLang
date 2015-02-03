@@ -2,6 +2,8 @@ package fr.marzin.jacques.revlang;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -20,7 +22,8 @@ import java.util.Hashtable;
 
 public class ParametrageActivity extends Activity {
 
-    public JmSession maJmSession;
+    public SQLiteDatabase db;
+    public Session session;
     private TextView mt_poidsMin;
     private TextView mt_errMin;
     private TextView mt_ageMin;
@@ -32,34 +35,39 @@ public class ParametrageActivity extends Activity {
     private ListView lThemes;
     private ListView lVerbes;
     private int[] tableauIdThemes;
+    String[] tableauThemes;
     private int[] tableauIdVerbes;
+    private String[] tableauVerbes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(fr.marzin.jacques.revlang.R.layout.activity_parametrage);
-    }
+        MyDbHelper dbManager = new MyDbHelper(getBaseContext());
+        db = dbManager.getWritableDatabase();
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        maJmSession = new JmSession(null,getBaseContext());
-        String langue = maJmSession.getLangue();
-        if (langue.equals("Italien")) {
+        if (session.langue.equals("Italien")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-        } else {
+        } else if (session.langue.equals("Anglais")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
+        } else if (session.langue.equals("Espagnol")) {
+            getActionBar().setIcon(R.drawable.espagnol);
+        } else {
+            getActionBar().setIcon(R.drawable.lingvo);
         }
+
         this.setTitle("Paramétrage");
-        maJmSession.initRevision();
+        Utilitaires.initRevision(db,session);
         mt_poidsMin = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_poidsMin);
-        mt_poidsMin.setText(""+maJmSession.getPoidsMin());
+        mt_poidsMin.setText(""+session.poidsMin);
         mt_ageMin = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_ageMin);
-        mt_ageMin.setText(""+maJmSession.getAgeRev());
+        mt_ageMin.setText(""+session.ageRev);
         mt_errMin = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_errMin);
-        mt_errMin.setText(""+maJmSession.getErrMin());
+        mt_errMin.setText(""+session.errMin);
         mt_conserveStats = (Switch) findViewById(fr.marzin.jacques.revlang.R.id.t_conserveStats);
-        if (maJmSession.getConserveStats() == 1) {
+        if (session.conserveStats == 1) {
             mt_conserveStats.setChecked(true);
         } else {
             mt_conserveStats.setChecked(false);
@@ -67,35 +75,51 @@ public class ParametrageActivity extends Activity {
 
         mRadioVocabulaire = (RadioButton) findViewById(fr.marzin.jacques.revlang.R.id.t_vocabulaire);
         mRadioConjugaisons = (RadioButton) findViewById(fr.marzin.jacques.revlang.R.id.t_conjugaisons);
-        if (maJmSession.getModeRevision().equals("Vocabulaire")) {
+        if (session.modeRevision.equals("Vocabulaire")) {
             mRadioVocabulaire.setChecked(true);
         } else {
             mRadioConjugaisons.setChecked(true);
         }
 
         onChangeChoix(mRadioVocabulaire);
-        Hashtable hThemes = maJmSession.getListeTousThemes();
-        Hashtable hVerbes = maJmSession.getListeTousVerbes();
-        String[] tableauThemes = (String[]) hThemes.get("noms");
-        tableauIdThemes = (int[]) hThemes.get("ids");
-        String[] tableauVerbes = (String[]) hVerbes.get("noms");
-        tableauIdVerbes = (int[]) hVerbes.get("ids");
+
+        Cursor c = Theme.where(db,"langue_id = \"" + session.langue.substring(0,2).toLowerCase() + "\"");
+        tableauThemes = new String[c.getCount()];
+        tableauIdThemes = new int[c.getCount()];
+        for (int i = 0 ; i < c.getCount() ; i++) {
+            c.moveToNext();
+            tableauIdThemes[i] = c.getInt(c.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_ID));
+            tableauThemes[i] = (String.format("%03d ",c.getInt(c.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_NUMERO))) +
+                    c.getString(c.getColumnIndexOrThrow(ThemeContract.ThemeTable.COLUMN_NAME_LANGUE)));
+        }
+
+        c = Verbe.where(db,"langue_id = \"" + session.langue.substring(0,2).toLowerCase() + "\"");
+        tableauIdVerbes = new int[c.getCount()];
+        tableauVerbes = new String[c.getCount()];
+        for (int i = 0 ; i < c.getCount() ; i++) {
+            c.moveToNext();
+            tableauIdVerbes[i] = c.getInt(c.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_ID));
+            tableauVerbes[i] = c.getString(c.getColumnIndexOrThrow(VerbeContract.VerbeTable.COLUMN_NAME_LANGUE));
+        }
+
         lThemes = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.l_themes);
         lVerbes = (ListView) findViewById(fr.marzin.jacques.revlang.R.id.l_verbes);
         ArrayAdapter<String> themesAdapter =
                 new ArrayAdapter<String>(this, fr.marzin.jacques.revlang.R.layout.choix_multiple, tableauThemes);
         ArrayAdapter<String> verbesAdapter =
                 new ArrayAdapter<String>(this, fr.marzin.jacques.revlang.R.layout.choix_multiple, tableauVerbes);
+
         lThemes.setAdapter(themesAdapter);
-        int[] tableauIdThemesSel = maJmSession.getListeThemes();
+        int[] tableauIdThemesSel = session.listeThemes;
         Arrays.sort(tableauIdThemesSel);
         for (int i = 0 ; i < tableauIdThemes.length ; i++) {
             if (Arrays.binarySearch(tableauIdThemesSel,tableauIdThemes[i]) >= 0) {
                 lThemes.setItemChecked(i , true);
             }
         }
+
         lVerbes.setAdapter(verbesAdapter);
-        int[] tableauIdVerbesSel = maJmSession.getListeVerbes();
+        int[] tableauIdVerbesSel = session.listeVerbes;
         Arrays.sort(tableauIdVerbesSel);
         for (int i = 0 ; i < tableauIdVerbes.length ; i++) {
             if (Arrays.binarySearch(tableauIdVerbesSel,tableauIdVerbes[i]) >= 0) {
@@ -105,8 +129,15 @@ public class ParametrageActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+        session = Session.find_by(db, selection);
+    }
+
+    @Override
     protected void onPause() {
-        maJmSession.save();
+        session.save(db);
         super.onResume();
     }
 
@@ -131,34 +162,39 @@ public class ParametrageActivity extends Activity {
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_mots:
                 intent = new Intent(this, MotsActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_verbes:
                 intent = new Intent(this, VerbesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_formes:
                 intent = new Intent(this, FormesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_revision:
                 intent = new Intent(this, RevisionActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_statistiques:
+                intent = new Intent(this, StatsActivity.class);
                 startActivity(intent);
                 finish();
                 return true;
@@ -181,20 +217,20 @@ public class ParametrageActivity extends Activity {
 
     public void onChangeConserveStats(View view) {
         if (mt_conserveStats.isChecked()) {
-            maJmSession.setConserveStats(1);
+            session.conserveStats = 1;
         } else {
-            maJmSession.setConserveStats(0);
+            session.conserveStats = 0;
         }
     }
 
     public void onPrepareListe(View view) {
-        maJmSession.setPoidsMin(Integer.parseInt(mt_poidsMin.getText().toString()));
-        maJmSession.setAgeRev(Integer.parseInt(mt_ageMin.getText().toString()));
-        maJmSession.setErrMin(Integer.parseInt(mt_errMin.getText().toString()));
+        session.poidsMin = Integer.parseInt(mt_poidsMin.getText().toString());
+        session.ageRev = Integer.parseInt(mt_ageMin.getText().toString());
+        session.errMin = Integer.parseInt(mt_errMin.getText().toString());
         if (mRadioVocabulaire.isChecked()) {
-            maJmSession.setModeRevision("Vocabulaire");
+            session.modeRevision = "Vocabulaire";
         } else {
-            maJmSession.setModeRevision("Conjugaisons");
+            session.modeRevision = "Conjugaisons";
         }
 
         int[] tableauIdThemesChecked = new int[lThemes.getCheckedItemCount()];
@@ -205,7 +241,7 @@ public class ParametrageActivity extends Activity {
                 j++;
             }
         }
-        maJmSession.setListeThemes(tableauIdThemesChecked);
+        session.listeThemes = tableauIdThemesChecked;
 
         int[] tableauIdVerbesChecked = new int[lVerbes.getCheckedItemCount()];
         j = 0;
@@ -215,10 +251,10 @@ public class ParametrageActivity extends Activity {
                 j++;
             }
         }
-        maJmSession.setListeVerbes(tableauIdVerbesChecked);
+        session.listeVerbes = tableauIdVerbesChecked;
 
-        maJmSession.creerListe();
-        String sousTitre = "Liste de " + maJmSession.getNbTermesListe() + "terme(s) (" + maJmSession.getTailleListe() + ")";
+        Utilitaires.creerListe(db,session);
+        String sousTitre = "Liste de " + session.getNbTermesListe() + "terme(s) (" + session.liste.size() + ")";
         getActionBar().setSubtitle(sousTitre);
     }
 }

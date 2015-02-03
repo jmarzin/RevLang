@@ -12,4 +12,6 @@
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_revision" android:title="@string/action_revision"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_statistiques" android:title="@string/action_statistiques"
+        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

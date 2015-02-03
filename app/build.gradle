@@ -8,8 +8,8 @@ android {
         applicationId "fr.marzin.jacques.revlang"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 6
-        versionName "1.5"
+        versionCode 8
+        versionName "1.7"
     }
     buildTypes {
         release {
@@ -22,4 +22,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.jjoe64:graphview:4.0.0'
 }

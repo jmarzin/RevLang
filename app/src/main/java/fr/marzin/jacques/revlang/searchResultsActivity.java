@@ -18,7 +18,8 @@ import android.widget.SimpleCursorAdapter;
 
 public class searchResultsActivity extends Activity {
 
-    public JmSession maJmSession;
+    public SQLiteDatabase db;
+    public Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,7 @@ public class searchResultsActivity extends Activity {
 
     @Override
     protected void onPause() {
-        maJmSession.save();
+        session.save(db);
         super.onPause();
     }
 
@@ -55,7 +56,7 @@ public class searchResultsActivity extends Activity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if (maJmSession.getThemeId() > 0) {
+                if (session.themeId > 0) {
                     intent = new Intent(getBaseContext(), ThemesActivity.class);
                     startActivity(intent);
                     finish();
@@ -65,27 +66,32 @@ public class searchResultsActivity extends Activity {
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
-                maJmSession.setThemeId(0);
-                maJmSession.setMotId(0);
+                session.themeId = 0;
+                session.motId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_verbes:
                 intent = new Intent(this, VerbesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_formes:
                 intent = new Intent(this, FormesActivity.class);
-                maJmSession.setVerbeId(0);
-                maJmSession.setFormeId(0);
+                session.verbeId = 0;
+                session.formeId = 0;
                 startActivity(intent);
                 finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_revision:
                 intent = new Intent(this, RevisionActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            case fr.marzin.jacques.revlang.R.id.action_statistiques:
+                intent = new Intent(this, StatsActivity.class);
                 startActivity(intent);
                 finish();
                 return true;
@@ -101,31 +107,29 @@ public class searchResultsActivity extends Activity {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            maJmSession = new JmSession(null,getBaseContext());
-            String langue = maJmSession.getLangue();
-            if (langue.equals("Italien")) {
+            MyDbHelper dbManager = new MyDbHelper(getBaseContext());
+            db = dbManager.getWritableDatabase();
+            String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+            session = Session.find_by(db, selection);
+
+            if (session.langue.equals("Italien")) {
                 getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-            } else {
+            } else if (session.langue.equals("Anglais")) {
                 getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
+            } else if (session.langue.equals("Espagnol")) {
+                getActionBar().setIcon(R.drawable.espagnol);
+            } else {
+//            getActionBar().setIcon(R.drawable.esperanto);
             }
+
             this.setTitle("Mots trouvés");
-            final Cursor mCursor;
-            SQLiteDatabase db = maJmSession.getDb();
-            String sortOrder =
-                MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR + " ASC";
-            String selection = MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2).toLowerCase() + "\"" +
-                " AND (" + MotContract.MotTable.COLUMN_NAME_FRANCAIS + " LIKE \"" + query + "\"" +
-                " OR " + MotContract.MotTable.COLUMN_NAME_LANGUE + " LIKE \"" + query + "\"" +
-                " OR " + MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR + " LIKE \"" + query + "\")";
-            mCursor = db.query(
-                MotContract.MotTable.TABLE_NAME,
-                null,
-                selection,
-                null,
-                null,
-                null,
-                sortOrder
-                );
+
+            selection = MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + session.langue.substring(0, 2).toLowerCase() + "\"" +
+                    " AND (" + MotContract.MotTable.COLUMN_NAME_FRANCAIS + " LIKE \"" + query + "\"" +
+                    " OR " + MotContract.MotTable.COLUMN_NAME_LANGUE + " LIKE \"" + query + "\"" +
+                    " OR " + MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR + " LIKE \"" + query + "\")";
+            final Cursor mCursor = Mot.where(db,selection);
+
             ListAdapter adapter = new SimpleCursorAdapter(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -142,7 +146,7 @@ public class searchResultsActivity extends Activity {
                     mCursor.moveToPosition(pos);
 //                    maJmSession.setMotPos(pos);
                     int rowId = mCursor.getInt(mCursor.getColumnIndexOrThrow("_id"));
-                    maJmSession.setMotId(rowId);
+                    session.motId = rowId;
                     Intent intent = new Intent(getBaseContext(), MotActivity.class);
                     startActivity(intent);
                 }
@@ -150,5 +154,4 @@ public class searchResultsActivity extends Activity {
         }
         return;
     }
-
 }

@@ -276,7 +276,7 @@ public class MiseAJour extends IntentService {
             nombreMaj++;
             verbe.langue = verbe_dist.getString(1);
         }
-        verbe.date_maj = dateMajVocabulaire;
+        verbe.date_maj = dateMajConjugaisons;
         verbe.save(db);
         return verbe._id;
     }
