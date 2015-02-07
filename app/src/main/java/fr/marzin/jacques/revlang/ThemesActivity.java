@@ -91,7 +91,7 @@ public class ThemesActivity extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-                finish();
+//                finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_mots:
                 intent = new Intent(this, MotsActivity.class);

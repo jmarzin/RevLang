@@ -7,9 +7,9 @@ android {
     defaultConfig {
         applicationId "fr.marzin.jacques.revlang"
         minSdkVersion 17
-        targetSdkVersion 21
-        versionCode 8
-        versionName "1.7"
+        targetSdkVersion 19
+        versionCode 9
+        versionName "1.8"
     }
     buildTypes {
         release {

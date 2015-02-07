@@ -19,6 +19,7 @@ import android.widget.SimpleCursorAdapter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -66,6 +67,8 @@ public class StatsActivity extends Activity {
         erreurs.setColor(Color.RED);
         DataPoint point;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date datedebut = null, datefin = null, dateprec = null;
+        int nbpoints = mCursor.getCount();
         for (int i = 0 ; i < mCursor.getCount() ; i++) {
             mCursor.moveToNext();
             String dateS = mCursor.getString(mCursor.getColumnIndexOrThrow(StatsContract.StatsTable.COLUMN_NAME_DATE));
@@ -75,20 +78,50 @@ public class StatsActivity extends Activity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            if (i == 0) {
+                datedebut = new Date(date.getTime());
+            } else if (i == mCursor.getCount()-1) {
+                datefin = new Date(date.getTime());
+            }
+            if (dateprec != null) {
+                for (long j = dateprec.getTime() + 24 * 3600000; j < date.getTime(); j += 24 * 3600000) {
+                    nbpoints++;
+                    dateprec.setTime(j);
+                    point = new DataPoint(dateprec, 0);
+                    questions.appendData(point, true, nbpoints);
+                    erreurs.appendData(point, true, nbpoints);
+                }
+            }
             int nbQuestionsMots = mCursor.getInt(mCursor.getColumnIndexOrThrow(StatsContract.StatsTable.COLUMN_NAME_NB_QUESTIONS_MOTS));
             int nbErreursMots = mCursor.getInt(mCursor.getColumnIndexOrThrow(StatsContract.StatsTable.COLUMN_NAME_NB_ERREURS_MOTS));
             int nbQuestionsFormes = mCursor.getInt(mCursor.getColumnIndexOrThrow(StatsContract.StatsTable.COLUMN_NAME_NB_QUESTIONS_FORMES));
             int nbErreursFormes = mCursor.getInt(mCursor.getColumnIndexOrThrow(StatsContract.StatsTable.COLUMN_NAME_NB_ERREURS_FORMES));
             point = new DataPoint(date,nbQuestionsMots+nbQuestionsFormes);
-            questions.appendData(point, true, mCursor.getCount());
+            questions.appendData(point, true, nbpoints);
             point = new DataPoint(date,nbErreursFormes+nbErreursMots);
-            erreurs.appendData(point,true,mCursor.getCount());
+            erreurs.appendData(point,true,nbpoints);
+            dateprec = new Date(date.getTime());
         }
         graph.addSeries(questions);
         graph.addSeries(erreurs);
-        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getBaseContext()));
-        graph.getGridLabelRenderer().setNumHorizontalLabels(4); // only 4 because of the space
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getBaseContext(),formatter));
+        graph.getViewport().setXAxisBoundsManual(true);
 
+        if (datedebut != null) {graph.getViewport().setMinX(datedebut.getTime());}
+        if (datedebut != null) {graph.getViewport().setMaxX(datefin.getTime());}
+
+        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+        if (nbpoints % 2 == 1) {
+            staticLabelsFormatter.setHorizontalLabels(new String[]{
+                    formatter.format(datedebut),
+                    formatter.format(new Date((datefin.getTime()+datedebut.getTime())/2)),
+                    formatter.format(datefin)});
+        } else {
+                staticLabelsFormatter.setHorizontalLabels(new String[]{
+                        formatter.format(datedebut),
+                        formatter.format(datefin)});
+        }
+        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
         ListAdapter adapter = new SimpleCursorAdapter(
                 this,
@@ -109,12 +142,12 @@ public class StatsActivity extends Activity {
         listView.setAdapter(adapter);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
-        session = Session.find_by(db, selection);
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
+//        session = Session.find_by(db, selection);
+//    }
 
     @Override
     protected void onPause() {
@@ -134,7 +167,7 @@ public class StatsActivity extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-                finish();
+//                finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);

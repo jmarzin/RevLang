@@ -100,6 +100,7 @@ public class MiseAJour extends IntentService {
         } else {
             envoiMessage("Pas de réseau. Mise à jour impossible.");
         }
+        db.close();
         stopSelf();
     }
 
