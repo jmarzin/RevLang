@@ -45,6 +45,7 @@
     <string name="boutonVeriferAutre">Autre question</string>
     <string name="Vocabulaire">Vocabulaire</string>
     <string name="Conjugaisons">Conjugaisons</string>
+    <string name="Mixte">Mixte</string>
     <string name="invitePoidsMin">Poids minimum</string>
     <string name="inviteAgeMin">Non révisés depuis</string>
     <string name="inviteErrMin">Avec plus de</string>

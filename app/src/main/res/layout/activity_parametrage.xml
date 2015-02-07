@@ -137,13 +137,22 @@
             android:text="@string/Vocabulaire"
             android:id="@+id/t_vocabulaire"
             android:layout_weight="1"
-            android:onClick="onChangeChoix" />
+            android:onClick="onChangeChoix"
+            android:textSize="@dimen/abc_text_size_small_material" />
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Conjugaisons"
             android:id="@+id/t_conjugaisons"
+            android:layout_weight="1"
+            android:onClick="onChangeChoix" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Mixte"
+            android:id="@+id/t_mixte"
             android:layout_weight="1"
             android:onClick="onChangeChoix" />
     </RadioGroup>
@@ -173,7 +182,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/layout_verbes">
 
         <TextView

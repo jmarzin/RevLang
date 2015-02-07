@@ -4,8 +4,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Hashtable;
 
 /**
  * Created by jacques on 24/01/15.
@@ -28,6 +26,12 @@ abstract class ItemQuestionnable extends TermeBase {
         majDateRev();
         int nRemove;
         int nouveauPoids;
+        int facteur;
+        if (this.getClass().getName().contains("Mot")) {
+            facteur = 1;
+        } else {
+            facteur = -1;
+        }
         if (poids == 1) {
             nouveauPoids = 1;
             nRemove = 1;
@@ -36,28 +40,32 @@ abstract class ItemQuestionnable extends TermeBase {
             nRemove = poids - nouveauPoids;
         }
         for (int i=0 ; i < nRemove ; i++) {
-            session.liste.remove((Integer) _id);
+            session.liste.remove((Integer) facteur*_id);
         }
         if (session.errMin > 0 && nb_err > 0) {
             nb_err -= 1;
         }
         poids = nouveauPoids;
         this.save(db);
-//        maJmSession.majStats(1, 0);
         return nouveauPoids;
     }
 
     public int augmente(SQLiteDatabase db, Session session) {
         majDateRev();
+        int facteur;
+        if (this.getClass().getName().contains("Mot")) {
+            facteur = 1;
+        } else {
+            facteur = -1;
+        }
         int nouveauPoids = poids*2;
         int nAjout = nouveauPoids - poids;
         for (int i=0 ; i < nAjout ; i++) {
-                session.liste.add((Integer) _id);
+                session.liste.add((Integer) facteur*_id);
         }
         nb_err += 1;
         poids = nouveauPoids;
         this.save(db);
-//        maJmSession.majStats(1, 1);
         return nouveauPoids;
     }
 }

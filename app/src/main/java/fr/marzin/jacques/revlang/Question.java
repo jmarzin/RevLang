@@ -16,10 +16,10 @@ public class Question {
 
     public Question(SQLiteDatabase db,Session session, Random aleatoire) {
         this.item = null;
-//        ArrayList<Integer> liste = session.liste;
+
         while (session.liste.size() != 0 && this.item == null) {
             int id_tire = session.liste.get(aleatoire.nextInt(session.liste.size()));
-            if (session.modeRevision.equals("Vocabulaire")) {
+            if (id_tire > 0) {
                 Mot mot = Mot.find(db, id_tire);
                 if (mot != null) {
                     this.item = mot;
@@ -33,7 +33,7 @@ public class Question {
                     while (session.liste.remove((Integer) id_tire)) { };
                 }
             } else {
-                Forme forme = Forme.find(db, id_tire);
+                Forme forme = Forme.find(db, -id_tire);
                 if (forme != null) {
                     this.item = forme;
                     if (forme.verbe != null) {
@@ -43,7 +43,7 @@ public class Question {
                     }
                     this.ligne2 = forme.forme_text;
                 } else {
-                    while (session.liste.remove((Integer) id_tire)) { };
+                    while (session.liste.remove((Integer) (-id_tire))) { };
                 }
             }
         }

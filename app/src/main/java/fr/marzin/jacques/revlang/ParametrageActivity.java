@@ -30,6 +30,7 @@ public class ParametrageActivity extends Activity {
     private Switch mt_conserveStats;
     private RadioButton mRadioVocabulaire;
     private RadioButton mRadioConjugaisons;
+    private RadioButton mRadioMixte;
     private LinearLayout mLayoutThemes;
     private LinearLayout mLayoutVerbes;
     private ListView lThemes;
@@ -75,10 +76,13 @@ public class ParametrageActivity extends Activity {
 
         mRadioVocabulaire = (RadioButton) findViewById(fr.marzin.jacques.revlang.R.id.t_vocabulaire);
         mRadioConjugaisons = (RadioButton) findViewById(fr.marzin.jacques.revlang.R.id.t_conjugaisons);
+        mRadioMixte = (RadioButton) findViewById(fr.marzin.jacques.revlang.R.id.t_mixte);
         if (session.modeRevision.equals("Vocabulaire")) {
             mRadioVocabulaire.setChecked(true);
-        } else {
+        } else if (session.modeRevision.equals("Conjugaisons")){
             mRadioConjugaisons.setChecked(true);
+        } else {
+            mRadioMixte.setChecked(true);
         }
 
         onChangeChoix(mRadioVocabulaire);
@@ -204,13 +208,17 @@ public class ParametrageActivity extends Activity {
 
     public void onChangeChoix(View view) {
         mRadioVocabulaire = (RadioButton) findViewById(fr.marzin.jacques.revlang.R.id.t_vocabulaire);
+        mRadioConjugaisons = (RadioButton) findViewById(R.id.t_conjugaisons);
         mLayoutThemes = (LinearLayout) findViewById(fr.marzin.jacques.revlang.R.id.layout_themes);
         mLayoutVerbes = (LinearLayout) findViewById(fr.marzin.jacques.revlang.R.id.layout_verbes);
         if (mRadioVocabulaire.isChecked()) {
             mLayoutThemes.setVisibility(View.VISIBLE);
             mLayoutVerbes.setVisibility(View.GONE);
-        } else {
+        } else if (mRadioConjugaisons.isChecked()) {
             mLayoutThemes.setVisibility(View.GONE);
+            mLayoutVerbes.setVisibility(View.VISIBLE);
+        } else {
+            mLayoutThemes.setVisibility(View.VISIBLE);
             mLayoutVerbes.setVisibility(View.VISIBLE);
         }
     }
@@ -229,8 +237,10 @@ public class ParametrageActivity extends Activity {
         session.errMin = Integer.parseInt(mt_errMin.getText().toString());
         if (mRadioVocabulaire.isChecked()) {
             session.modeRevision = "Vocabulaire";
-        } else {
+        } else if (mRadioConjugaisons.isChecked()) {
             session.modeRevision = "Conjugaisons";
+        } else {
+            session.modeRevision = "Mixte";
         }
 
         int[] tableauIdThemesChecked = new int[lThemes.getCheckedItemCount()];

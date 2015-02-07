@@ -67,23 +67,34 @@ public class Utilitaires {
         String id;
         String poids;
         Cursor c;
-        if (session.modeRevision.equals("Vocabulaire")) {
-            c = Mot.where(db, getSelection(session,"Mots"));
+        session.liste = new ArrayList<Integer>();
+        if (session.modeRevision.equals("Vocabulaire") || session.modeRevision.equals("Mixte")) {
+            c = Mot.where(db, getSelection(session, "Mots"));
             id = MotContract.MotTable.COLUMN_NAME_ID;
             poids = MotContract.MotTable.COLUMN_NAME_POIDS;
-        } else {
+            for (int i = 0 ; i < c.getCount() ; i++) {
+                c.moveToNext();
+                int element = c.getInt(c.getColumnIndexOrThrow(id));
+                int nb = c.getInt(c.getColumnIndexOrThrow(poids));
+                for (int j = 1 ; j <= nb ; j++) {
+                    session.liste.add(element);
+                }
+            }
+            c.close();
+        }
+        if (session.modeRevision.equals("Conjugaisons") || session.modeRevision.equals("Mixte")) {
             c = Forme.where(db, getSelection(session,"Formes"));
             id = FormeContract.FormeTable.COLUMN_NAME_ID;
             poids = FormeContract.FormeTable.COLUMN_NAME_POIDS;
-        }
-        session.liste = new ArrayList<Integer>();
-        for (int i = 0 ; i < c.getCount() ; i++) {
-            c.moveToNext();
-            int element = c.getInt(c.getColumnIndexOrThrow(id));
-            int nb = c.getInt(c.getColumnIndexOrThrow(poids));
-            for (int j = 1 ; j <= nb ; j++) {
-                session.liste.add(element);
+            for (int i = 0 ; i < c.getCount() ; i++) {
+                c.moveToNext();
+                int element = c.getInt(c.getColumnIndexOrThrow(id));
+                int nb = c.getInt(c.getColumnIndexOrThrow(poids));
+                for (int j = 1 ; j <= nb ; j++) {
+                    session.liste.add(-element);
+                }
             }
+            c.close();
         }
     }
 
