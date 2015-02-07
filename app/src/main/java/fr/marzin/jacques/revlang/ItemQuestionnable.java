@@ -39,8 +39,10 @@ abstract class ItemQuestionnable extends TermeBase {
             nouveauPoids = poids/2;
             nRemove = poids - nouveauPoids;
         }
+        Integer valeur;
         for (int i=0 ; i < nRemove ; i++) {
-            session.liste.remove((Integer) facteur*_id);
+            valeur = facteur*_id;
+            session.liste.remove(valeur);
         }
         if (session.errMin > 0 && nb_err > 0) {
             nb_err -= 1;
