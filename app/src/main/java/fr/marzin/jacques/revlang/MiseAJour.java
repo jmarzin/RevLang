@@ -84,18 +84,31 @@ public class MiseAJour extends IntentService {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             nombreMaj = 0;
-            if (besoinMajVocabulaire()) {
-                majVocabulaire();
-            }
-            if (besoinMajConjugaisons()) {
-                majConjugaisons();
-            };
-            if (nombreMaj == 0) {
-                envoiMessage("Tout est à jour.");
-            } else if (nombreMaj == 1) {
-                envoiMessage("1 objet mis à jour");
+            dateMajCategories = lectureGet(debutHttp + "date_categories");
+            dateMajMots = lectureGet(debutHttp + "date_mots");
+            dateMajVerbes = lectureGet(debutHttp + "date_verbes");
+            dateMajFormes = lectureGet(debutHttp + "date_formes");
+            boolean okMajVoc = true, okMajConj = true;
+            if (dateMajCategories == null || dateMajMots == null || dateMajVerbes == null || dateMajFormes == null) {
+                envoiMessage("Problème de réseau. Mise à jour impossible.");
             } else {
-                envoiMessage(nombreMaj + " objets mis à jour.");
+                if (besoinMajVocabulaire()) {
+                    okMajVoc = majVocabulaire();
+                }
+                if (besoinMajConjugaisons()) {
+                    okMajConj = majConjugaisons();
+                }
+                if (okMajConj && okMajVoc) {
+                    if (nombreMaj == 0) {
+                        envoiMessage("Tout est à jour.");
+                    } else if (nombreMaj == 1) {
+                        envoiMessage("1 objet mis à jour");
+                    } else {
+                        envoiMessage(nombreMaj + " objets mis à jour.");
+                    }
+                } else {
+                    envoiMessage("Problème de réseau. Mise à jour impossible.");
+                }
             }
         } else {
             envoiMessage("Pas de réseau. Mise à jour impossible.");
@@ -105,8 +118,6 @@ public class MiseAJour extends IntentService {
     }
 
     private boolean besoinMajVocabulaire() {
-        dateMajCategories = lectureGet(debutHttp + "date_categories");
-        dateMajMots = lectureGet(debutHttp + "date_mots");
         if (dateMajCategories.compareTo(dateMajMots) <= 0) {
             dateMajVocabulaire = dateMajMots;
         } else {
@@ -135,9 +146,12 @@ public class MiseAJour extends IntentService {
         }
     }
 
-    private void majVocabulaire() throws JSONException {
+    private boolean majVocabulaire() throws JSONException {
         Hashtable tableId = new Hashtable();
         String reponse = lectureGet(debutHttp + "categories");
+        if (reponse == null) {
+            return false;
+        }
         JSONArray tableCategories = new JSONArray(reponse);
         int nombreCategories = tableCategories.length();
         for (int i=0 ; i < nombreCategories ; i++ ) {
@@ -145,6 +159,9 @@ public class MiseAJour extends IntentService {
             tableId.put(categorie.getInt(0), majCategorie(categorie));
         }
         reponse = lectureGet(debutHttp + "mots");
+        if (reponse == null) {
+            return false;
+        }
         JSONArray tableMots = new JSONArray(reponse);
         int nombreMots = tableMots.length();
         for (int i=0 ; i < nombreMots ; i++) {
@@ -157,6 +174,7 @@ public class MiseAJour extends IntentService {
         db.execSQL("DELETE FROM " + MotContract.MotTable.TABLE_NAME +
                 " WHERE " + MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2) + "\" AND " +
                 MotContract.MotTable.COLUMN_NAME_DATE_MAJ + " <  \""+dateMajVocabulaire+"\"");
+        return true;
     }
 
     private int majCategorie(JSONArray categorie) throws JSONException {
@@ -210,8 +228,6 @@ public class MiseAJour extends IntentService {
     }
 
     private boolean besoinMajConjugaisons() {
-        dateMajVerbes = lectureGet(debutHttp + "date_verbes");
-        dateMajFormes = lectureGet(debutHttp + "date_formes");
         if (dateMajVerbes.compareTo(dateMajFormes) <= 0) {
             dateMajConjugaisons = dateMajFormes;
         } else {
@@ -240,9 +256,12 @@ public class MiseAJour extends IntentService {
         }
     }
 
-    private void majConjugaisons() throws JSONException {
+    private boolean majConjugaisons() throws JSONException {
         Hashtable tableId = new Hashtable();
         String reponse = lectureGet(debutHttp + "verbes");
+        if (reponse == null) {
+            return false;
+        }
         JSONArray tableVerbes = new JSONArray(reponse);
         int nombreVerbes = tableVerbes.length();
         for (int i=0 ; i < nombreVerbes ; i++ ) {
@@ -250,6 +269,9 @@ public class MiseAJour extends IntentService {
             tableId.put(verbe.getInt(0), majVerbe(verbe));
         }
         reponse = lectureGet(debutHttp + "formes");
+        if (reponse == null) {
+            return false;
+        }
         JSONArray tableFormes = new JSONArray(reponse);
         int nombreFormes = tableFormes.length();
         for (int i=0 ; i < nombreFormes ; i++) {
@@ -262,6 +284,7 @@ public class MiseAJour extends IntentService {
         db.execSQL("DELETE FROM " + FormeContract.FormeTable.TABLE_NAME +
                 " WHERE " + FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2) + "\" AND " +
                 FormeContract.FormeTable.COLUMN_NAME_DATE_MAJ + " <  \""+dateMajConjugaisons+"\"");
+        return true;
     }
 
     private int majVerbe(JSONArray verbe_dist) throws JSONException {
@@ -350,7 +373,9 @@ public class MiseAJour extends IntentService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return response.toString();
+        } else {
+            return null;
         }
-        return response.toString();
     }
 }

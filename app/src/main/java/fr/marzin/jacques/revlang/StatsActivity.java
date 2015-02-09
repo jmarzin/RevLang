@@ -105,23 +105,25 @@ public class StatsActivity extends Activity {
         graph.addSeries(questions);
         graph.addSeries(erreurs);
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getBaseContext(),formatter));
-        graph.getViewport().setXAxisBoundsManual(true);
 
-        if (datedebut != null) {graph.getViewport().setMinX(datedebut.getTime());}
-        if (datedebut != null) {graph.getViewport().setMaxX(datefin.getTime());}
+        if (datedebut != null && datefin != null) {
+            graph.getViewport().setXAxisBoundsManual(true);
+            graph.getViewport().setMinX(datedebut.getTime());
+            graph.getViewport().setMaxX(datefin.getTime());
 
-        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-        if (nbpoints % 2 == 1) {
-            staticLabelsFormatter.setHorizontalLabels(new String[]{
-                    formatter.format(datedebut),
-                    formatter.format(new Date((datefin.getTime()+datedebut.getTime())/2)),
-                    formatter.format(datefin)});
-        } else {
+            StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+            if (nbpoints % 2 == 1) {
+                staticLabelsFormatter.setHorizontalLabels(new String[]{
+                        formatter.format(datedebut),
+                        formatter.format(new Date((datefin.getTime() + datedebut.getTime()) / 2)),
+                        formatter.format(datefin)});
+            } else {
                 staticLabelsFormatter.setHorizontalLabels(new String[]{
                         formatter.format(datedebut),
                         formatter.format(datefin)});
+            }
+            graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
         }
-        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
         ListAdapter adapter = new SimpleCursorAdapter(
                 this,
