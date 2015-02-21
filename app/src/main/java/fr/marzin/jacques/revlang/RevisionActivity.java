@@ -254,7 +254,7 @@ public class RevisionActivity extends Activity {
             stats.langue_id = session.langue.substring(0,2).toLowerCase();
         }
 
-        if (session.modeRevision.equals("Vocabulaire")) {
+        if (question.item.getClass().getName().contains("Mot")) {
             stats.nb_questions_mots += nbQuestions;
             stats.nb_erreurs_mots += nbErreurs;
         } else {

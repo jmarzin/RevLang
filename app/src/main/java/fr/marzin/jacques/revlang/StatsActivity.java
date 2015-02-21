@@ -68,7 +68,7 @@ public class StatsActivity extends Activity {
         DataPoint point;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date datedebut = null, datefin = null, dateprec = null;
-        int nbpoints = mCursor.getCount();
+        int nbpoints = mCursor.getCount(), max = 0;
         for (int i = 0 ; i < mCursor.getCount() ; i++) {
             mCursor.moveToNext();
             String dateS = mCursor.getString(mCursor.getColumnIndexOrThrow(StatsContract.StatsTable.COLUMN_NAME_DATE));
@@ -101,17 +101,17 @@ public class StatsActivity extends Activity {
             point = new DataPoint(date,nbErreursFormes+nbErreursMots);
             erreurs.appendData(point,true,nbpoints);
             dateprec = new Date(date.getTime());
+            max = Math.max(max,nbQuestionsFormes+nbQuestionsMots);
         }
         graph.addSeries(questions);
         graph.addSeries(erreurs);
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getBaseContext(),formatter));
 
+        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
         if (datedebut != null && datefin != null) {
             graph.getViewport().setXAxisBoundsManual(true);
             graph.getViewport().setMinX(datedebut.getTime());
             graph.getViewport().setMaxX(datefin.getTime());
-
-            StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
             if (nbpoints % 2 == 1) {
                 staticLabelsFormatter.setHorizontalLabels(new String[]{
                         formatter.format(datedebut),
@@ -124,6 +124,16 @@ public class StatsActivity extends Activity {
             }
             graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
         }
+
+        if (max < 450 && max > 400) {
+            graph.getViewport().setYAxisBoundsManual(true);
+            graph.getViewport().setMinY(0);
+            graph.getViewport().setMaxY(450);
+            graph.getGridLabelRenderer().setNumVerticalLabels(4);
+        }
+
+        graph.getViewport().setScalable(true);
+        graph.getViewport().setScrollable(true);
 
         ListAdapter adapter = new SimpleCursorAdapter(
                 this,
@@ -144,13 +154,6 @@ public class StatsActivity extends Activity {
         listView.setAdapter(adapter);
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
-//        session = Session.find_by(db, selection);
-//    }
-
     @Override
     protected void onPause() {
         session.save(db);
@@ -169,7 +172,6 @@ public class StatsActivity extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-//                finish();
                 return true;
             case fr.marzin.jacques.revlang.R.id.action_themes:
                 intent = new Intent(this, ThemesActivity.class);
