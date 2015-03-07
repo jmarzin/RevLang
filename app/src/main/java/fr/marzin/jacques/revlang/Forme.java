@@ -33,7 +33,6 @@ public class Forme extends ItemQuestionnable {
         values.put(FormeContract.FormeTable.COLUMN_NAME_POIDS, poids);
         values.put(FormeContract.FormeTable.COLUMN_NAME_NB_ERR, nb_err);
         values.put(FormeContract.FormeTable.COLUMN_NAME_DATE_REV, date_rev);
-
         values.put(FormeContract.FormeTable.COLUMN_NAME_DATE_MAJ,date_maj);
         values.put(FormeContract.FormeTable.COLUMN_NAME_DIST_ID,dist_id);
         values.put(FormeContract.FormeTable.COLUMN_NAME_FORME_ID,forme_id);

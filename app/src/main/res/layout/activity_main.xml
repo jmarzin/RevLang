@@ -48,7 +48,8 @@
             android:layout_column="1"
             android:layout_span="1"
             android:layout_weight="1"
-            android:layout_gravity="right" />
+            android:layout_gravity="right"
+            android:nestedScrollingEnabled="true" />
 
         <ImageButton
             android:layout_width="wrap_content"

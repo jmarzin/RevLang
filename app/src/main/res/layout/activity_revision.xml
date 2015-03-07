@@ -83,9 +83,22 @@
                 android:layout_marginLeft="10dp"
                 android:lines="3"
                 android:maxLines="5" />
+
         </TableRow>
 
     </TableLayout>
+
+    <ImageButton
+        android:layout_width="@dimen/taille_drap"
+        android:layout_height="wrap_content"
+        android:id="@+id/im_speaker"
+        android:src="@drawable/speaker"
+        android:layout_gravity="center_horizontal"
+        android:longClickable="false"
+        android:clickable="true"
+        android:baselineAlignBottom="false"
+        android:onClick="clickSpeaker"
+        android:visibility="gone" />
 
     <Button
         android:layout_width="match_parent"

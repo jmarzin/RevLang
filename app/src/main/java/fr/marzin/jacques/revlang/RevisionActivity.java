@@ -4,18 +4,21 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Random;
 
 
@@ -25,6 +28,9 @@ public class RevisionActivity extends Activity {
     public Session session;
     public Question question;
     public Random aleatoire;
+    private TextToSpeech ttobj;
+    private Locale locale;
+    private ImageButton imSpeaker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +43,20 @@ public class RevisionActivity extends Activity {
 
         if (session.langue.equals("Italien")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
+            locale = Locale.ITALIAN;
         } else if (session.langue.equals("Anglais")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
+            locale = Locale.ENGLISH;
         } else if (session.langue.equals("Espagnol")) {
             getActionBar().setIcon(R.drawable.espagnol);
+            locale = new Locale("es","ES");
         } else {
             getActionBar().setIcon(R.drawable.lingvo);
+            locale = null;
         }
 
         this.setTitle("Révision");
+
         Utilitaires.initRevision(db, session);
         if (aleatoire == null) {
             aleatoire = new Random();
@@ -58,12 +69,28 @@ public class RevisionActivity extends Activity {
         super.onResume();
         String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
         session = Session.find_by(db, selection);
+        ttobj=new TextToSpeech(getApplicationContext(),
+                new TextToSpeech.OnInitListener() {
+                    @Override
+                    public void onInit(int status) {
+                        if(status != TextToSpeech.ERROR){
+                            if (locale != null) {
+                                ttobj.setLanguage(locale);
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     @Override
     protected void onPause() {
         session.save(db);
-        super.onResume();
+        if(ttobj !=null){
+            ttobj.stop();
+            ttobj.shutdown();
+        }
+        super.onPause();
     }
 
     @Override
@@ -161,7 +188,9 @@ public class RevisionActivity extends Activity {
         TextView mtexteReponse = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.texteReponse);
         EditText mReponse = (EditText) findViewById(fr.marzin.jacques.revlang.R.id.reponse);
         TableLayout mzoneQuestion = (TableLayout) findViewById(fr.marzin.jacques.revlang.R.id.zoneQuestion);
+        imSpeaker = (ImageButton) findViewById(R.id.im_speaker);
         question = new Question(db,session,aleatoire);
+        imSpeaker.setVisibility(View.INVISIBLE);
         if (question.item == null) {
             mBravo.setText("Plus de questions !");
             mBravo.setTextColor(0xFF000000);
@@ -177,6 +206,10 @@ public class RevisionActivity extends Activity {
             mtexteReponse.setText("");
             mReponse.setText("");
         }
+    }
+
+    public void clickSpeaker(View view) {
+        ttobj.speak(question.item.langue, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     public void clickBouton(View view) {
@@ -212,6 +245,9 @@ public class RevisionActivity extends Activity {
             texte += " (" + nouveauPoids + ")";
             mtexteReponse.setText(eclate(texte));
             mBouton.setText("Autre question");
+            if (locale != null) {
+                imSpeaker.setVisibility(View.VISIBLE);
+            }
             ajusteSousTitre();
         } else {
             poseQuestion();

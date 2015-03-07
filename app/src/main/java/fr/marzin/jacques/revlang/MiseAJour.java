@@ -351,7 +351,7 @@ public class MiseAJour extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (httpResponse.getStatusLine().getStatusCode() == 200) {
+        if (httpResponse != null && httpResponse.getStatusLine().getStatusCode() == 200) {
             HttpEntity messageEntity = httpResponse.getEntity();
             InputStream is = null;
             try {

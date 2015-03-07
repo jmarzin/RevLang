@@ -5,17 +5,21 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.util.Locale;
 
 
 public class MotActivity extends Activity {
 
     public SQLiteDatabase db;
     public Session session;
+    private TextToSpeech ttobj;
+    private Locale locale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +33,20 @@ public class MotActivity extends Activity {
 
         if (session.langue.equals("Italien")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
+            locale = Locale.ITALIAN;
         } else if (session.langue.equals("Anglais")) {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
+            locale = Locale.ENGLISH;
         } else if (session.langue.equals("Espagnol")) {
             getActionBar().setIcon(R.drawable.espagnol);
+            locale = new Locale("es","ES");
         } else {
             getActionBar().setIcon(R.drawable.lingvo);
+            locale = null;
         }
 
         this.setTitle("Mot");
-        Mot mot = Mot.find(db,session.motId);
+        final Mot mot = Mot.find(db,session.motId);
 
         TextView t_id = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_id);
         t_id.setText(""+session.motId);
@@ -84,6 +92,20 @@ public class MotActivity extends Activity {
             TextView t_date_maj = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_date_maj);
             t_date_maj.setText(mot.date_maj);
 
+            ttobj=new TextToSpeech(getApplicationContext(),
+                    new TextToSpeech.OnInitListener() {
+                        @Override
+                        public void onInit(int status) {
+                            if(status != TextToSpeech.ERROR){
+                                if (locale != null) {
+                                    ttobj.setLanguage(locale);
+                                    ttobj.speak(mot.langue, TextToSpeech.QUEUE_FLUSH, null);
+                                }
+                            }
+                        }
+                    }
+            );
+
         }
     }
 
@@ -97,6 +119,10 @@ public class MotActivity extends Activity {
     @Override
     protected void onPause() {
         session.save(db);
+        if(ttobj !=null){
+            ttobj.stop();
+            ttobj.shutdown();
+        }
         super.onPause();
     }
 

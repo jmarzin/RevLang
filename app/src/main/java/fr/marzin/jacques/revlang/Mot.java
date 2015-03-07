@@ -33,7 +33,6 @@ public class Mot extends ItemQuestionnable {
         values.put(MotContract.MotTable.COLUMN_NAME_POIDS, poids);
         values.put(MotContract.MotTable.COLUMN_NAME_NB_ERR, nb_err);
         values.put(MotContract.MotTable.COLUMN_NAME_DATE_REV, date_rev);
-
         values.put(MotContract.MotTable.COLUMN_NAME_DATE_MAJ,date_maj);
         values.put(MotContract.MotTable.COLUMN_NAME_DIST_ID,dist_id);
         values.put(MotContract.MotTable.COLUMN_NAME_FRANCAIS,francais);
