@@ -21,6 +21,7 @@ public class Session {
     public int errMin;
     public int ageRev;
     public int conserveStats;
+    public int parleAuto;
     public int nbQuestions;
     public int nbErreurs;
     public int[] listeThemes;
@@ -39,6 +40,7 @@ public class Session {
         this.errMin = 0;
         this.ageRev = 0;
         this.conserveStats = 0;
+        this.parleAuto = 0;
         this.nbQuestions = 0;
         this.nbErreurs = 0;
         this.listeThemes = new int[0];
@@ -89,6 +91,7 @@ public class Session {
         values.put(SessionContract.SessionTable.COLUMN_NAME_ERR_MIN,errMin);
         values.put(SessionContract.SessionTable.COLUMN_NAME_AGE_REV,ageRev);
         values.put(SessionContract.SessionTable.COLUMN_NAME_CONSERVE_STATS,conserveStats);
+        values.put(SessionContract.SessionTable.COLUMN_NAME_PARLE_AUTO,parleAuto);
         values.put(SessionContract.SessionTable.COLUMN_NAME_NB_QUESTIONS,nbQuestions);
         values.put(SessionContract.SessionTable.COLUMN_NAME_NB_ERREURS,nbErreurs);
         values.put(SessionContract.SessionTable.COLUMN_NAME_LISTE_THEMES,serialize(listeThemes));
@@ -122,6 +125,7 @@ public class Session {
             session.errMin = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_ERR_MIN));
             session.ageRev = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_AGE_REV));
             session.conserveStats = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_CONSERVE_STATS));
+            session.parleAuto = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_PARLE_AUTO));
             session.nbQuestions = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_NB_QUESTIONS));
             session.nbErreurs = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_NB_ERREURS));
             session.listeVerbes = deserialize(mCursor.getString(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_LISTE_VERBES)));

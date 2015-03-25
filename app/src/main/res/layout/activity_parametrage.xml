@@ -123,6 +123,17 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:onClick="onChangeConserveStats" />
 
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/parleAuto"
+        android:id="@+id/t_parleAuto"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:onClick="onChangeParleAuto"
+        android:splitTrack="false"
+        android:singleLine="false"
+        android:switchPadding="30dp" />
+
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -170,6 +181,15 @@
             android:text="@string/inviteRestrictionThemes"
             android:id="@+id/inviteRestrictionThemes" />
 
+        <!--<ExpandableListView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/el_themes"-->
+            <!--android:clickable="false"-->
+            <!--android:choiceMode="multipleChoice"-->
+            <!--android:fastScrollAlwaysVisible="true"-->
+            <!--android:fastScrollEnabled="true" />-->
+
         <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -191,6 +211,15 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/inviteRestrictionVerbes"
             android:id="@+id/inviteRestrictionVerbes" />
+
+        <!--<ExpandableListView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/el_verbes"-->
+            <!--android:choiceMode="multipleChoice"-->
+            <!--android:clickable="false"-->
+            <!--android:fastScrollAlwaysVisible="true"-->
+            <!--android:fastScrollEnabled="true" />-->
 
         <ListView
             android:layout_width="wrap_content"

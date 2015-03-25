@@ -28,6 +28,7 @@ public class ParametrageActivity extends Activity {
     private TextView mt_errMin;
     private TextView mt_ageMin;
     private Switch mt_conserveStats;
+    private Switch mt_parleAuto;
     private RadioButton mRadioVocabulaire;
     private RadioButton mRadioConjugaisons;
     private RadioButton mRadioMixte;
@@ -72,6 +73,12 @@ public class ParametrageActivity extends Activity {
             mt_conserveStats.setChecked(true);
         } else {
             mt_conserveStats.setChecked(false);
+        }
+        mt_parleAuto = (Switch) findViewById(R.id.t_parleAuto);
+        if (session.parleAuto == 1) {
+            mt_parleAuto.setChecked(true);
+        } else {
+            mt_parleAuto.setChecked(false);
         }
 
         mRadioVocabulaire = (RadioButton) findViewById(fr.marzin.jacques.revlang.R.id.t_vocabulaire);
@@ -228,6 +235,14 @@ public class ParametrageActivity extends Activity {
             session.conserveStats = 1;
         } else {
             session.conserveStats = 0;
+        }
+    }
+
+    public void onChangeParleAuto(View view) {
+        if (mt_parleAuto.isChecked()) {
+            session.parleAuto = 1;
+        } else {
+            session.parleAuto = 0;
         }
     }
 

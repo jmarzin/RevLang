@@ -19,6 +19,7 @@ public final class SessionContract {
         public static final String COLUMN_NAME_ERR_MIN = "errMin";
         public static final String COLUMN_NAME_AGE_REV = "ageRev";
         public static final String COLUMN_NAME_CONSERVE_STATS = "conserveStats";
+        public static final String COLUMN_NAME_PARLE_AUTO = "parleAuto";
         public static final String COLUMN_NAME_NB_QUESTIONS = "nbQuestions";
         public static final String COLUMN_NAME_NB_ERREURS = "nbErreurs";
         public static final String COLUMN_NAME_LISTE_THEMES = "listeThemes";

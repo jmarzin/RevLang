@@ -132,6 +132,20 @@ public class StatsActivity extends Activity {
             graph.getGridLabelRenderer().setNumVerticalLabels(4);
         }
 
+        if (max < 500 && max > 450) {
+            graph.getViewport().setYAxisBoundsManual(true);
+            graph.getViewport().setMinY(0);
+            graph.getViewport().setMaxY(500);
+            graph.getGridLabelRenderer().setNumVerticalLabels(5);
+        }
+
+        if (max < 600 && max > 500) {
+            graph.getViewport().setYAxisBoundsManual(true);
+            graph.getViewport().setMinY(0);
+            graph.getViewport().setMaxY(600);
+            graph.getGridLabelRenderer().setNumVerticalLabels(4);
+        }
+
         graph.getViewport().setScalable(true);
         graph.getViewport().setScrollable(true);
 

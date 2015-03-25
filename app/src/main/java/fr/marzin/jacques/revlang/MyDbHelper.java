@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class MyDbHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 16;
+    public static final int DATABASE_VERSION = 17;
     public static final String DATABASE_NAME = "RevLangues.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
@@ -87,6 +87,7 @@ public class MyDbHelper extends SQLiteOpenHelper {
                     SessionContract.SessionTable.COLUMN_NAME_ERR_MIN + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_AGE_REV + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_CONSERVE_STATS + INTEGER_TYPE + COMMA_SEP +
+                    SessionContract.SessionTable.COLUMN_NAME_PARLE_AUTO + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_NB_QUESTIONS + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_NB_ERREURS + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_LISTE_THEMES + TEXT_TYPE + COMMA_SEP +
@@ -139,6 +140,9 @@ public class MyDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion == 16 && newVersion == 17) {
+            db.execSQL("ALTER TABLE sessions ADD parleAuto INTEGER");
+        }
         if (oldVersion == 13 && newVersion == 14) {
             db.execSQL(SQL_CREATE_STATS);
         } else if (oldVersion == 14 && newVersion == 15) {

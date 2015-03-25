@@ -249,6 +249,9 @@ public class RevisionActivity extends Activity {
                 imSpeaker.setVisibility(View.VISIBLE);
             }
             ajusteSousTitre();
+            if (session.parleAuto == 1) {
+                clickSpeaker(view);
+            }
         } else {
             poseQuestion();
         }

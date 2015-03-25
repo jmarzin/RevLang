@@ -79,5 +79,6 @@
     <string name="t_nbErreursMots">E/M</string>
     <string name="t_nbQuestionsFormes">Q/F</string>
     <string name="t_nbErreursFormes">E/F</string>
+    <string name="parleAuto">Prononciation à la demande</string>
 
 </resources>
