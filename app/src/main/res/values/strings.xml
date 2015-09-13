@@ -24,6 +24,7 @@
     <string name="Italien">Italien</string>
     <string name="Anglais">Anglais</string>
     <string name="Espagnol">Espagnol</string>
+    <string name="Occitan">Occitan</string>
     <string name="Lingvo">Lingvo</string>
     <string name="titre_langue">Choisissez votre langue</string>
     <string name="title_activity_theme">Thèmes</string>
@@ -49,6 +50,7 @@
     <string name="invitePoidsMin">Poids minimum</string>
     <string name="inviteAgeMin">Non révisés depuis</string>
     <string name="inviteErrMin">Avec plus de</string>
+    <string name="inviteNivMax">Niveau de langue</string>
     <string name="jours">jours</string>
     <string name="erreurs">erreur(s)</string>
     <string name="conserveStats">Conserver les stats en quittant</string>
@@ -60,7 +62,7 @@
     <string name="l_langue_id">Code langue</string>
     <string name="l_francais">En français</string>
     <string name="l_directeur">Mot directeur</string>
-    <string name="l_prononciation">Prononciation</string>
+    <string name="l_langue_niveau">Niveau de langue</string>
     <string name="l_date_rev">Date de révision</string>
     <string name="l_poids">Poids</string>
     <string name="l_nberr">Nb erreurs</string>

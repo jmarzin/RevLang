@@ -113,6 +113,29 @@
 
         </TableRow>
 
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/inviteNivMax"
+                android:id="@+id/inviteNivMax" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/t_nivMax"
+                android:inputType="number"
+                android:editable="false"
+                android:enabled="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true" />
+
+        </TableRow>
+
     </TableLayout>
 
     <Switch

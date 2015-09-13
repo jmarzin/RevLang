@@ -12,6 +12,7 @@ public class Mot extends ItemQuestionnable {
 //    public String theme_langue;
     public String francais;
     public String mot_directeur;
+    public String langue_niveau;
     public Theme theme;
 
     public Mot() {
@@ -24,7 +25,7 @@ public class Mot extends ItemQuestionnable {
         this.langue = "";
         this.langue_id = "";
         this.mot_directeur = "";
-        this.prononciation = "";
+        this.langue_niveau = "1";
         this.theme = new Theme();
     }
 
@@ -39,7 +40,7 @@ public class Mot extends ItemQuestionnable {
         values.put(MotContract.MotTable.COLUMN_NAME_LANGUE,langue);
         values.put(MotContract.MotTable.COLUMN_NAME_LANGUE_ID,langue_id);
         values.put(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR,mot_directeur);
-        values.put(MotContract.MotTable.COLUMN_NAME_PRONONCIATION,prononciation);
+        values.put(MotContract.MotTable.COLUMN_NAME_LANGUE_NIVEAU,langue_niveau);
         values.put(MotContract.MotTable.COLUMN_NAME_THEME_ID,theme._id);
 
         if (this._id > 0) {
@@ -59,9 +60,9 @@ public class Mot extends ItemQuestionnable {
             int theme_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_THEME_ID));
             mot.theme = Theme.find(db,theme_id);
             mot.francais = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_FRANCAIS));
+            mot.langue_niveau = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE_NIVEAU));
             mot.mot_directeur = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR));
             mot.langue = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE));
-            mot.prononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_PRONONCIATION));
             mot.date_rev = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_DATE_REV));
             mot.poids = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_POIDS));
             mot.nb_err = mCursor.getInt(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_NB_ERR));

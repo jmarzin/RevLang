@@ -27,6 +27,7 @@ public class ParametrageActivity extends Activity {
     private TextView mt_poidsMin;
     private TextView mt_errMin;
     private TextView mt_ageMin;
+    private TextView mt_nivMax;
     private Switch mt_conserveStats;
     private Switch mt_parleAuto;
     private RadioButton mRadioVocabulaire;
@@ -56,6 +57,8 @@ public class ParametrageActivity extends Activity {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
         } else if (session.langue.equals("Espagnol")) {
             getActionBar().setIcon(R.drawable.espagnol);
+        } else if (session.langue.equals("Occitan")) {
+            getActionBar().setIcon(R.drawable.occitan);
         } else {
             getActionBar().setIcon(R.drawable.lingvo);
         }
@@ -63,11 +66,13 @@ public class ParametrageActivity extends Activity {
         this.setTitle("Paramétrage");
         Utilitaires.initRevision(db,session);
         mt_poidsMin = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_poidsMin);
-        mt_poidsMin.setText(""+session.poidsMin);
+        mt_poidsMin.setText("" + session.poidsMin);
         mt_ageMin = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_ageMin);
         mt_ageMin.setText(""+session.ageRev);
         mt_errMin = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_errMin);
         mt_errMin.setText(""+session.errMin);
+        mt_nivMax = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_nivMax);
+        mt_nivMax.setText(""+session.nivMax);
         mt_conserveStats = (Switch) findViewById(fr.marzin.jacques.revlang.R.id.t_conserveStats);
         if (session.conserveStats == 1) {
             mt_conserveStats.setChecked(true);
@@ -250,6 +255,7 @@ public class ParametrageActivity extends Activity {
         session.poidsMin = Integer.parseInt(mt_poidsMin.getText().toString());
         session.ageRev = Integer.parseInt(mt_ageMin.getText().toString());
         session.errMin = Integer.parseInt(mt_errMin.getText().toString());
+        session.nivMax = mt_nivMax.getText().toString();
         if (mRadioVocabulaire.isChecked()) {
             session.modeRevision = "Vocabulaire";
         } else if (mRadioConjugaisons.isChecked()) {

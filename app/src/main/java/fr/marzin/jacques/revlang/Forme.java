@@ -24,7 +24,6 @@ public class Forme extends ItemQuestionnable {
         this.forme_id = 0;
         this.langue = "";
         this.langue_id = "";
-        this.prononciation = "";
         this.verbe = new Verbe();
     }
 
@@ -38,7 +37,6 @@ public class Forme extends ItemQuestionnable {
         values.put(FormeContract.FormeTable.COLUMN_NAME_FORME_ID,forme_id);
         values.put(FormeContract.FormeTable.COLUMN_NAME_LANGUE,langue);
         values.put(FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID,langue_id);
-        values.put(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION,prononciation);
         values.put(FormeContract.FormeTable.COLUMN_NAME_VERBE_ID,verbe._id);
 
         if (this._id > 0) {
@@ -60,7 +58,6 @@ public class Forme extends ItemQuestionnable {
             forme.forme_id = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_FORME_ID));
             forme.forme_text = FormeContract.forme_ids.get(forme.langue_id)[forme.forme_id - 1][0];
             forme.langue = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_LANGUE));
-            forme.prononciation = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION));
             forme.date_rev = mCursor.getString(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_DATE_REV));
             forme.poids = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_POIDS));
             forme.nb_err = mCursor.getInt(mCursor.getColumnIndexOrThrow(FormeContract.FormeTable.COLUMN_NAME_NB_ERR));

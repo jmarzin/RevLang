@@ -17,9 +17,10 @@ public class Utilitaires {
         date.setTime(date.getTime() -session.ageRev*24*3600000);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateRev = sdf.format(date);
-        String cond1, cond2 = "", cond3 = "", cond4 = "", cond5 = "";
+        String cond1, cond2 = "", cond3 = "", cond4 = "", cond5 = "", cond6 = "";
         if (objets == "Mots") {
             cond1 = MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + session.langue.substring(0, 2).toLowerCase() + "\"";
+            cond6 = " AND " + MotContract.MotTable.COLUMN_NAME_LANGUE_NIVEAU + " <= \"" + session.nivMax + "\"";
             if (session.ageRev != 0) {
                 cond2 = " AND " + MotContract.MotTable.COLUMN_NAME_DATE_REV + " <= \"" + dateRev + "\"";
             }
@@ -59,7 +60,7 @@ public class Utilitaires {
                 cond5 += ")";
             }
         }
-        return cond1 + cond2 + cond3 + cond4 + cond5;
+        return cond1 + cond2 + cond3 + cond4 + cond5 + cond6;
     }
 
     public static void creerListe(SQLiteDatabase db, Session session) {

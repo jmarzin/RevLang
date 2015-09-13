@@ -49,7 +49,9 @@ public class RevisionActivity extends Activity {
             locale = Locale.ENGLISH;
         } else if (session.langue.equals("Espagnol")) {
             getActionBar().setIcon(R.drawable.espagnol);
-            locale = new Locale("es","ES");
+            locale = new Locale("es", "ES");
+        } else if (session.langue.equals("Occitan")) {
+            getActionBar().setIcon(R.drawable.occitan);
         } else {
             getActionBar().setIcon(R.drawable.lingvo);
             locale = null;
@@ -219,9 +221,6 @@ public class RevisionActivity extends Activity {
             TextView mtexteReponse = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.texteReponse);
             String texte = question.item.langue;
 
-            if (!question.item.prononciation.equals("")) {
-                texte += " [" + question.item.prononciation + "]";
-            }
             int nouveauPoids;
             EditText mReponse = (EditText) findViewById(fr.marzin.jacques.revlang.R.id.reponse);
             session.nbQuestions++;

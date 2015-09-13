@@ -85,6 +85,21 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="@dimen/taille_drap"
+            android:id="@+id/im_occitan"
+            android:adjustViewBounds="true"
+            android:background="#00ffffff"
+            android:clickable="true"
+            android:contentDescription="@string/Occitan"
+            android:onClick="clickDrapeauOccitan"
+            android:src="@drawable/occitan"
+            android:layout_column="3"
+            android:layout_span="1"
+            android:layout_weight="1"
+            android:layout_gravity="left" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/taille_drap"
             android:id="@+id/im_lingvo"
             android:adjustViewBounds="true"
             android:background="#00ffffff"

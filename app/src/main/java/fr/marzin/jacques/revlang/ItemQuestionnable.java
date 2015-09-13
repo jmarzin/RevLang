@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
  * Created by jacques on 24/01/15.
  */
 abstract class ItemQuestionnable extends TermeBase {
-    public String prononciation;
     public String date_rev;
     public int poids;
     public int nb_err;

@@ -33,7 +33,6 @@ public class MiseAJour extends IntentService {
     private static final String ACTION_RETOUR_MAJ = "fr.marzin.jacques.revlang.action.RETOUR_MAJ";
     public static SQLiteDatabase db;
     private String langue;
-    private String debutHttpAnc;
     private String debutHttpNouv;
     private String dateMajCategories;
     private String dateMajMots;
@@ -60,8 +59,7 @@ public class MiseAJour extends IntentService {
             final String action = intent.getAction();
             if (ACTION_MAJ.equals(action)) {
                 langue = intent.getStringExtra(EXTRA_LANGUE).toLowerCase();
-                debutHttpAnc = "http://langues.jmarzin.fr/"+langue+"/api/v2/";
-                debutHttpNouv = "http://langues.jmarzin.fr:9000/"+langue.substring(0,2)+"/api/v1/";
+                debutHttpNouv = "http://langues.jmarzin.fr:9000/"+langue.substring(0,2)+"/api/";
                 try {
                     handleActionMaj(langue);
                 } catch (JSONException e) {
@@ -86,10 +84,10 @@ public class MiseAJour extends IntentService {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             nombreMaj = 0;
-            dateMajCategories = lectureGet(debutHttpNouv + "date_themes");
-            dateMajMots = lectureGet(debutHttpNouv + "date_mots");
-            dateMajVerbes = lectureGet(debutHttpNouv + "date_verbes");
-            dateMajFormes = lectureGet(debutHttpNouv + "date_formes");
+            dateMajCategories = lectureGet(debutHttpNouv + "v1/date_themes");
+            dateMajMots = lectureGet(debutHttpNouv + "v1/date_mots");
+            dateMajVerbes = lectureGet(debutHttpNouv + "v1/date_verbes");
+            dateMajFormes = lectureGet(debutHttpNouv + "v1/date_formes");
             boolean okMajVoc = true, okMajConj = true;
             if (dateMajCategories == null || dateMajMots == null || dateMajVerbes == null || dateMajFormes == null) {
                 envoiMessage("Problème de réseau. Mise à jour impossible.");
@@ -150,7 +148,7 @@ public class MiseAJour extends IntentService {
 
     private boolean majVocabulaire() throws JSONException {
         Hashtable tableId = new Hashtable();
-        String reponse = lectureGet(debutHttpNouv + "themes");
+        String reponse = lectureGet(debutHttpNouv + "v1/themes");
         if (reponse == null) {
             return false;
         }
@@ -160,7 +158,7 @@ public class MiseAJour extends IntentService {
             JSONArray categorie = tableCategories.optJSONArray(i);
             tableId.put(categorie.getInt(0), majCategorie(categorie));
         }
-        reponse = lectureGet(debutHttpNouv + "mots");
+        reponse = lectureGet(debutHttpNouv + "v2/mots");
         if (reponse == null) {
             return false;
         }
@@ -220,9 +218,9 @@ public class MiseAJour extends IntentService {
             mot.mot_directeur = mot_dist.getString(3);
             mot.langue = mot_dist.getString(4);
         }
-        if (mot_dist.length() == 6 && !mot.prononciation.equals(mot_dist.getString(5))) {
+        if (mot_dist.length() == 6 && !mot.langue_niveau.equals(mot_dist.getString(5))) {
             modifie = true;
-            mot.prononciation = mot_dist.getString(5);
+            mot.langue_niveau = mot_dist.getString(5);
         }
         if (modifie) { nombreMaj++;}
         mot.date_maj = dateMajVocabulaire;
@@ -260,7 +258,7 @@ public class MiseAJour extends IntentService {
 
     private boolean majConjugaisons() throws JSONException {
         Hashtable tableId = new Hashtable();
-        String reponse = lectureGet(debutHttpNouv + "verbes");
+        String reponse = lectureGet(debutHttpNouv + "v1/verbes");
         if (reponse == null) {
             return false;
         }
@@ -270,7 +268,7 @@ public class MiseAJour extends IntentService {
             JSONArray verbe = tableVerbes.optJSONArray(i);
             tableId.put(verbe.getInt(0), majVerbe(verbe));
         }
-        reponse = lectureGet(debutHttpNouv + "formes");
+        reponse = lectureGet(debutHttpNouv + "v1/formes");
         if (reponse == null) {
             return false;
         }
@@ -326,10 +324,6 @@ public class MiseAJour extends IntentService {
             modifie = true;
             forme.forme_id = forme_dist.getInt(2);
             forme.langue = forme_dist.getString(3);
-        }
-        if (forme_dist.length() == 5 && !forme.prononciation.equals(forme_dist.getString(4))) {
-            modifie = true;
-            forme.prononciation = forme_dist.getString(4);
         }
         if (modifie) {nombreMaj++;}
         forme.date_maj = dateMajConjugaisons;

@@ -30,6 +30,8 @@ public class FormeActivity extends Activity {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
         } else if (session.langue.equals("Espagnol")) {
             getActionBar().setIcon(R.drawable.espagnol);
+        } else if (session.langue.equals("Occitan")) {
+            getActionBar().setIcon(R.drawable.occitan);
         } else {
             getActionBar().setIcon(R.drawable.lingvo);
         }
@@ -59,9 +61,6 @@ public class FormeActivity extends Activity {
 
             TextView t_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue);
             t_langue.setText(forme.langue);
-
-            TextView t_prononciation = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_prononciation);
-            t_prononciation.setText(forme.prononciation);
 
             TextView t_date_rev = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_date_rev);
             t_date_rev.setText(forme.date_rev);

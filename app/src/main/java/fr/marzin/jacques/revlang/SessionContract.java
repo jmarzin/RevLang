@@ -18,6 +18,7 @@ public final class SessionContract {
         public static final String COLUMN_NAME_POIDS_MIN = "poidsMin";
         public static final String COLUMN_NAME_ERR_MIN = "errMin";
         public static final String COLUMN_NAME_AGE_REV = "ageRev";
+        public static final String COLUMN_NAME_NIV_MAX = "nivMax";
         public static final String COLUMN_NAME_CONSERVE_STATS = "conserveStats";
         public static final String COLUMN_NAME_PARLE_AUTO = "parleAuto";
         public static final String COLUMN_NAME_NB_QUESTIONS = "nbQuestions";

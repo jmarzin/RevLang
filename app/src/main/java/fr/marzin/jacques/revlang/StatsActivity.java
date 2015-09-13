@@ -51,6 +51,8 @@ public class StatsActivity extends Activity {
             getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
         } else if (session.langue.equals("Espagnol")) {
             getActionBar().setIcon(R.drawable.espagnol);
+        } else if (session.langue.equals("Occitan")) {
+            getActionBar().setIcon(R.drawable.occitan);
         } else {
             getActionBar().setIcon(R.drawable.lingvo);
         }

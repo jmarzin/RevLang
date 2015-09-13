@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class MyDbHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 17;
+    public static final int DATABASE_VERSION = 19;
     public static final String DATABASE_NAME = "RevLangues.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
@@ -43,11 +43,11 @@ public class MyDbHelper extends SQLiteOpenHelper {
                     MotContract.MotTable.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_THEME_ID + INTEGER_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_DIST_ID + INTEGER_TYPE + COMMA_SEP +
+                    MotContract.MotTable.COLUMN_NAME_LANGUE_NIVEAU + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_FRANCAIS + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_LANGUE_ID + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_LANGUE + TEXT_TYPE + COMMA_SEP +
-                    MotContract.MotTable.COLUMN_NAME_PRONONCIATION + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_DATE_MAJ + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_DATE_REV + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_POIDS + INTEGER_TYPE + COMMA_SEP +
@@ -66,7 +66,6 @@ public class MyDbHelper extends SQLiteOpenHelper {
                     FormeContract.FormeTable.COLUMN_NAME_FORME_ID + INTEGER_TYPE + COMMA_SEP +
                     FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + TEXT_TYPE + COMMA_SEP +
                     FormeContract.FormeTable.COLUMN_NAME_LANGUE + TEXT_TYPE + COMMA_SEP +
-                    FormeContract.FormeTable.COLUMN_NAME_PRONONCIATION + TEXT_TYPE + COMMA_SEP +
                     FormeContract.FormeTable.COLUMN_NAME_DATE_MAJ + TEXT_TYPE + COMMA_SEP +
                     FormeContract.FormeTable.COLUMN_NAME_DATE_REV + TEXT_TYPE + COMMA_SEP +
                     FormeContract.FormeTable.COLUMN_NAME_POIDS + INTEGER_TYPE + COMMA_SEP +
@@ -86,6 +85,7 @@ public class MyDbHelper extends SQLiteOpenHelper {
                     SessionContract.SessionTable.COLUMN_NAME_POIDS_MIN + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_ERR_MIN + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_AGE_REV + INTEGER_TYPE + COMMA_SEP +
+                    SessionContract.SessionTable.COLUMN_NAME_NIV_MAX + TEXT_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_CONSERVE_STATS + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_PARLE_AUTO + INTEGER_TYPE + COMMA_SEP +
                     SessionContract.SessionTable.COLUMN_NAME_NB_QUESTIONS + INTEGER_TYPE + COMMA_SEP +

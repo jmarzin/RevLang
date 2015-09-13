@@ -39,7 +39,10 @@ public class MotActivity extends Activity {
             locale = Locale.ENGLISH;
         } else if (session.langue.equals("Espagnol")) {
             getActionBar().setIcon(R.drawable.espagnol);
-            locale = new Locale("es","ES");
+            locale = new Locale("es", "ES");
+        } else if (session.langue.equals("Occitan")) {
+            getActionBar().setIcon(R.drawable.occitan);
+            locale = null;
         } else {
             getActionBar().setIcon(R.drawable.lingvo);
             locale = null;
@@ -74,8 +77,8 @@ public class MotActivity extends Activity {
             TextView t_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue);
             t_langue.setText(mot.langue);
 
-            TextView t_prononciation = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_prononciation);
-            t_prononciation.setText(mot.prononciation);
+            TextView t_prononciation = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue_niveau);
+            t_prononciation.setText(mot.langue_niveau);
 
             TextView t_date_rev = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_date_rev);
             t_date_rev.setText(mot.date_rev);

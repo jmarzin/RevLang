@@ -20,6 +20,7 @@ public class Session {
     public int poidsMin;
     public int errMin;
     public int ageRev;
+    public String nivMax;
     public int conserveStats;
     public int parleAuto;
     public int nbQuestions;
@@ -39,6 +40,7 @@ public class Session {
         this.poidsMin = 0;
         this.errMin = 0;
         this.ageRev = 0;
+        this.nivMax = "1";
         this.conserveStats = 0;
         this.parleAuto = 0;
         this.nbQuestions = 0;
@@ -89,6 +91,7 @@ public class Session {
         values.put(SessionContract.SessionTable.COLUMN_NAME_MODE_REVISION,this.modeRevision);
         values.put(SessionContract.SessionTable.COLUMN_NAME_POIDS_MIN,poidsMin);
         values.put(SessionContract.SessionTable.COLUMN_NAME_ERR_MIN,errMin);
+        values.put(SessionContract.SessionTable.COLUMN_NAME_NIV_MAX,nivMax);
         values.put(SessionContract.SessionTable.COLUMN_NAME_AGE_REV,ageRev);
         values.put(SessionContract.SessionTable.COLUMN_NAME_CONSERVE_STATS,conserveStats);
         values.put(SessionContract.SessionTable.COLUMN_NAME_PARLE_AUTO,parleAuto);
@@ -123,6 +126,7 @@ public class Session {
             session.modeRevision = mCursor.getString(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_MODE_REVISION));
             session.poidsMin = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_POIDS_MIN));
             session.errMin = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_ERR_MIN));
+            session.nivMax = mCursor.getString(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_NIV_MAX));
             session.ageRev = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_AGE_REV));
             session.conserveStats = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_CONSERVE_STATS));
             session.parleAuto = mCursor.getInt(mCursor.getColumnIndexOrThrow(SessionContract.SessionTable.COLUMN_NAME_PARLE_AUTO));
