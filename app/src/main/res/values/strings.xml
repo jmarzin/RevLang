@@ -24,6 +24,7 @@
     <string name="Italien">Italien</string>
     <string name="Anglais">Anglais</string>
     <string name="Espagnol">Espagnol</string>
+    <string name="Portugais">Portugais</string>
     <string name="Occitan">Occitan</string>
     <string name="Lingvo">Lingvo</string>
     <string name="titre_langue">Choisissez votre langue</string>
@@ -42,6 +43,7 @@
     <string name="ligne2Question">Mot ou forme</string>
     <string name="inviteReponse">Votre réponse :</string>
     <string name="texteReponse">Texte de la réponse</string>
+    <string name="prononciation">Prononciation</string>
     <string name="bravoOuEchec">Bravo ou échec</string>
     <string name="boutonVeriferAutre">Autre question</string>
     <string name="Vocabulaire">Vocabulaire</string>
@@ -50,7 +52,7 @@
     <string name="invitePoidsMin">Poids minimum</string>
     <string name="inviteAgeMin">Non révisés depuis</string>
     <string name="inviteErrMin">Avec plus de</string>
-    <string name="inviteNivMax">Niveau de langue</string>
+    <string name="inviteNivMax">Niveau maximum</string>
     <string name="jours">jours</string>
     <string name="erreurs">erreur(s)</string>
     <string name="conserveStats">Conserver les stats en quittant</string>
@@ -62,6 +64,7 @@
     <string name="l_langue_id">Code langue</string>
     <string name="l_francais">En français</string>
     <string name="l_directeur">Mot directeur</string>
+    <string name="l_pronunciation">Prononciation</string>
     <string name="l_langue_niveau">Niveau de langue</string>
     <string name="l_date_rev">Date de révision</string>
     <string name="l_poids">Poids</string>
@@ -81,6 +84,7 @@
     <string name="t_nbErreursMots">E/M</string>
     <string name="t_nbQuestionsFormes">Q/F</string>
     <string name="t_nbErreursFormes">E/F</string>
-    <string name="parleAuto">Prononciation à la demande</string>
+    <string name="parleAuto">Prononciation automatique</string>
+    <string name="boutonSpeaker"></string>
 
 </resources>

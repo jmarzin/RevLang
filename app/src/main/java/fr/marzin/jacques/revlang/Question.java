@@ -13,6 +13,7 @@ public class Question {
     public ItemQuestionnable item;
     public String ligne1;
     public String ligne2;
+    public String prononciation;
 
     public Question(SQLiteDatabase db,Session session, Random aleatoire) {
         this.item = null;
@@ -29,6 +30,7 @@ public class Question {
                         this.ligne1 = "";
                     }
                     this.ligne2 = mot.francais;
+                    this.prononciation = mot.pronunciation;
                 } else {
                     while (session.liste.remove((Integer) id_tire)) { };
                 }

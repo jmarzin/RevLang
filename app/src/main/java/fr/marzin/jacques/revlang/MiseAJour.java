@@ -59,7 +59,7 @@ public class MiseAJour extends IntentService {
             final String action = intent.getAction();
             if (ACTION_MAJ.equals(action)) {
                 langue = intent.getStringExtra(EXTRA_LANGUE).toLowerCase();
-                debutHttpNouv = "http://langues.jmarzin.fr:9000/"+langue.substring(0,2)+"/api/";
+                debutHttpNouv = "http://langues.jmarzin.fr/"+langue.substring(0,2)+"/api/";
                 try {
                     handleActionMaj(langue);
                 } catch (JSONException e) {
@@ -128,8 +128,8 @@ public class MiseAJour extends IntentService {
         if (nbThemes == 0) {
             return true;
         }
-        long nbMots = DatabaseUtils.queryNumEntries(db, "\""+MotContract.MotTable.TABLE_NAME+"\"",
-                MotContract.MotTable.COLUMN_NAME_LANGUE_ID + "= \""+langue.substring(0,2)+"\"");
+        long nbMots = DatabaseUtils.queryNumEntries(db, "\"" + MotContract.MotTable.TABLE_NAME + "\"",
+                MotContract.MotTable.COLUMN_NAME_LANGUE_ID + "= \"" + langue.substring(0, 2) + "\"");
         if (nbMots == 0) {
             return true;
         }
@@ -158,7 +158,7 @@ public class MiseAJour extends IntentService {
             JSONArray categorie = tableCategories.optJSONArray(i);
             tableId.put(categorie.getInt(0), majCategorie(categorie));
         }
-        reponse = lectureGet(debutHttpNouv + "v2/mots");
+        reponse = lectureGet(debutHttpNouv + "v3/mots");
         if (reponse == null) {
             return false;
         }
@@ -173,7 +173,7 @@ public class MiseAJour extends IntentService {
                 ThemeContract.ThemeTable.COLUMN_NAME_DATE_MAJ + " <  \""+dateMajVocabulaire+"\"");
         db.execSQL("DELETE FROM " + MotContract.MotTable.TABLE_NAME +
                 " WHERE " + MotContract.MotTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2) + "\" AND " +
-                MotContract.MotTable.COLUMN_NAME_DATE_MAJ + " <  \""+dateMajVocabulaire+"\"");
+                MotContract.MotTable.COLUMN_NAME_DATE_MAJ + " <  \"" + dateMajVocabulaire + "\"");
         return true;
     }
 
@@ -184,7 +184,7 @@ public class MiseAJour extends IntentService {
         if (theme == null) {
             theme = new Theme();
             theme.dist_id = categorie.getInt(0);
-            theme.langue_id = langue.substring(0,2);
+            theme.langue_id = langue.substring(0, 2);
         }
         if (theme.numero != categorie.getInt(1) || !theme.langue.equals(categorie.getString(2))) {
             nombreMaj++;
@@ -218,9 +218,13 @@ public class MiseAJour extends IntentService {
             mot.mot_directeur = mot_dist.getString(3);
             mot.langue = mot_dist.getString(4);
         }
-        if (mot_dist.length() == 6 && !mot.langue_niveau.equals(mot_dist.getString(5))) {
+        if (mot_dist.length() >= 6 && !mot.langue_niveau.equals(mot_dist.getString(5))) {
             modifie = true;
             mot.langue_niveau = mot_dist.getString(5);
+        }
+        if (mot_dist.length() >= 7 && !mot.pronunciation.equals(mot_dist.getString(6))) {
+            modifie = true;
+            mot.pronunciation = mot_dist.getString(6);
         }
         if (modifie) { nombreMaj++;}
         mot.date_maj = dateMajVocabulaire;
@@ -238,8 +242,8 @@ public class MiseAJour extends IntentService {
         if (nbVerbes == 0) {
             return true;
         }
-        long nbFormes = DatabaseUtils.queryNumEntries(db, "\""+ FormeContract.FormeTable.TABLE_NAME+"\"",
-                FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + "= \""+langue.substring(0,2)+"\"");
+        long nbFormes = DatabaseUtils.queryNumEntries(db, "\"" + FormeContract.FormeTable.TABLE_NAME + "\"",
+                FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + "= \"" + langue.substring(0, 2) + "\"");
         if (nbFormes == 0) {
             return true;
         }
@@ -283,7 +287,7 @@ public class MiseAJour extends IntentService {
                 VerbeContract.VerbeTable.COLUMN_NAME_DATE_MAJ + " <  \""+dateMajConjugaisons+"\"");
         db.execSQL("DELETE FROM " + FormeContract.FormeTable.TABLE_NAME +
                 " WHERE " + FormeContract.FormeTable.COLUMN_NAME_LANGUE_ID + " = \"" + langue.substring(0, 2) + "\" AND " +
-                FormeContract.FormeTable.COLUMN_NAME_DATE_MAJ + " <  \""+dateMajConjugaisons+"\"");
+                FormeContract.FormeTable.COLUMN_NAME_DATE_MAJ + " <  \"" + dateMajConjugaisons + "\"");
         return true;
     }
 
@@ -310,6 +314,9 @@ public class MiseAJour extends IntentService {
                 " AND " + FormeContract.FormeTable.COLUMN_NAME_DIST_ID + " = " + forme_dist.getInt(0);
         Forme forme = Forme.find_by(db,selection);
         if (forme == null) {
+            if (forme_dist.getString(3).isEmpty()){
+                return;
+            }
             forme = new Forme();
             forme.dist_id = forme_dist.getInt(0);
             forme.langue_id = langue.substring(0,2);

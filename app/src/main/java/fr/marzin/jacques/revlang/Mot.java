@@ -13,6 +13,7 @@ public class Mot extends ItemQuestionnable {
     public String francais;
     public String mot_directeur;
     public String langue_niveau;
+    public String pronunciation;
     public Theme theme;
 
     public Mot() {
@@ -26,6 +27,7 @@ public class Mot extends ItemQuestionnable {
         this.langue_id = "";
         this.mot_directeur = "";
         this.langue_niveau = "1";
+        this.pronunciation = "";
         this.theme = new Theme();
     }
 
@@ -41,6 +43,7 @@ public class Mot extends ItemQuestionnable {
         values.put(MotContract.MotTable.COLUMN_NAME_LANGUE_ID,langue_id);
         values.put(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR,mot_directeur);
         values.put(MotContract.MotTable.COLUMN_NAME_LANGUE_NIVEAU,langue_niveau);
+        values.put(MotContract.MotTable.COLUMN_NAME_PRONUNCIATION,pronunciation);
         values.put(MotContract.MotTable.COLUMN_NAME_THEME_ID,theme._id);
 
         if (this._id > 0) {
@@ -61,6 +64,7 @@ public class Mot extends ItemQuestionnable {
             mot.theme = Theme.find(db,theme_id);
             mot.francais = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_FRANCAIS));
             mot.langue_niveau = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE_NIVEAU));
+            mot.pronunciation = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_PRONUNCIATION));
             mot.mot_directeur = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR));
             mot.langue = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_LANGUE));
             mot.date_rev = mCursor.getString(mCursor.getColumnIndexOrThrow(MotContract.MotTable.COLUMN_NAME_DATE_REV));

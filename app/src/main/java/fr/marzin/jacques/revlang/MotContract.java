@@ -19,6 +19,7 @@ public final class MotContract {
         public static final String COLUMN_NAME_MOT_DIRECTEUR = "mot_directeur";
         public static final String COLUMN_NAME_LANGUE_ID = "langue_id";
         public static final String COLUMN_NAME_LANGUE = "langue";
+        public static final String COLUMN_NAME_PRONUNCIATION = "prononciation";
         public static final String COLUMN_NAME_DATE_MAJ = "date_maj";
         public static final String COLUMN_NAME_DATE_REV = "date_rev";
         public static final String COLUMN_NAME_POIDS = "poids";

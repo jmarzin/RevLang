@@ -30,17 +30,7 @@ public class VerbesActivity extends Activity {
         String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
         session = Session.find_by(db, selection);
 
-        if (session.langue.equals("Italien")) {
-            getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-        } else if (session.langue.equals("Anglais")) {
-            getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
-        } else if (session.langue.equals("Espagnol")) {
-            getActionBar().setIcon(R.drawable.espagnol);
-        } else if (session.langue.equals("Occitan")) {
-            getActionBar().setIcon(R.drawable.occitan);
-        } else {
-            getActionBar().setIcon(R.drawable.lingvo);
-        }
+        getActionBar().setIcon(Utilitaires.drapeau(session.langue));
 
         this.setTitle("Verbes");
 

@@ -6,11 +6,44 @@ import android.database.sqlite.SQLiteDatabase;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by jacques on 28/01/15.
  */
 public class Utilitaires {
+
+    public static int drapeau(String langue) {
+        if (langue.equals("Italien")) {
+            return R.drawable.italien;
+        } else if (langue.equals("Anglais")) {
+            return R.drawable.anglais;
+        } else if (langue.equals("Espagnol")) {
+            return R.drawable.espagnol;
+        } else if (langue.equals("Occitan")) {
+            return R.drawable.occitan;
+        } else if (langue.equals("Portugais")) {
+            return R.drawable.portugais;
+        } else {
+            return R.drawable.lingvo;
+        }
+    }
+
+    public static Locale setLocale(String langue) {
+        if (langue.equals("Italien")) {
+            return Locale.ITALIAN;
+        } else if (langue.equals("Anglais")) {
+            return Locale.ENGLISH;
+        } else if (langue.equals("Espagnol")) {
+            return new Locale("es", "ES");
+        } else if (langue.equals("Occitan")) {
+            return null;
+        } else if (langue.equals("Portugais")) {
+            return new Locale("pt", "PT");
+        } else {
+            return null;
+        }
+    }
 
     public static String getSelection(Session session, String objets) {
         Timestamp date = new Timestamp(System.currentTimeMillis());

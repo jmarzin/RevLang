@@ -155,7 +155,7 @@
         android:onClick="onChangeParleAuto"
         android:splitTrack="false"
         android:singleLine="false"
-        android:switchPadding="30dp" />
+        android:switchPadding="35dp" />
 
     <RadioGroup
         android:layout_width="match_parent"

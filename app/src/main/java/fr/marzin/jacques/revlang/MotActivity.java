@@ -31,22 +31,8 @@ public class MotActivity extends Activity {
         String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
         session = Session.find_by(db, selection);
 
-        if (session.langue.equals("Italien")) {
-            getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-            locale = Locale.ITALIAN;
-        } else if (session.langue.equals("Anglais")) {
-            getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
-            locale = Locale.ENGLISH;
-        } else if (session.langue.equals("Espagnol")) {
-            getActionBar().setIcon(R.drawable.espagnol);
-            locale = new Locale("es", "ES");
-        } else if (session.langue.equals("Occitan")) {
-            getActionBar().setIcon(R.drawable.occitan);
-            locale = null;
-        } else {
-            getActionBar().setIcon(R.drawable.lingvo);
-            locale = null;
-        }
+        getActionBar().setIcon(Utilitaires.drapeau(session.langue));
+        locale = Utilitaires.setLocale(session.langue);
 
         this.setTitle("Mot");
         final Mot mot = Mot.find(db,session.motId);
@@ -77,8 +63,11 @@ public class MotActivity extends Activity {
             TextView t_langue = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue);
             t_langue.setText(mot.langue);
 
-            TextView t_prononciation = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue_niveau);
-            t_prononciation.setText(mot.langue_niveau);
+            TextView t_pronunciation = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_pronunciation);
+            t_pronunciation.setText(mot.pronunciation);
+
+            TextView t_langue_niveau = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_langue_niveau);
+            t_langue_niveau.setText(mot.langue_niveau);
 
             TextView t_date_rev = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.t_date_rev);
             t_date_rev.setText(mot.date_rev);

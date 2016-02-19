@@ -111,6 +111,10 @@ public class MainActivity extends Activity {
         changeLangue(getString(fr.marzin.jacques.revlang.R.string.Espagnol));
     }
 
+    public void clickDrapeauPortugais(View view) {
+        changeLangue(getString(fr.marzin.jacques.revlang.R.string.Portugais));
+    }
+
     public void clickDrapeauOccitan(View view) {
         changeLangue("Occitan");
     }

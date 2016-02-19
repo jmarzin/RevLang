@@ -41,21 +41,8 @@ public class RevisionActivity extends Activity {
         String selection = SessionContract.SessionTable.COLUMN_NAME_DERNIERE + " = 1";
         session = Session.find_by(db, selection);
 
-        if (session.langue.equals("Italien")) {
-            getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.italien);
-            locale = Locale.ITALIAN;
-        } else if (session.langue.equals("Anglais")) {
-            getActionBar().setIcon(fr.marzin.jacques.revlang.R.drawable.anglais);
-            locale = Locale.ENGLISH;
-        } else if (session.langue.equals("Espagnol")) {
-            getActionBar().setIcon(R.drawable.espagnol);
-            locale = new Locale("es", "ES");
-        } else if (session.langue.equals("Occitan")) {
-            getActionBar().setIcon(R.drawable.occitan);
-        } else {
-            getActionBar().setIcon(R.drawable.lingvo);
-            locale = null;
-        }
+        getActionBar().setIcon(Utilitaires.drapeau(session.langue));
+        locale = Utilitaires.setLocale(session.langue);
 
         this.setTitle("Révision");
 
@@ -188,6 +175,7 @@ public class RevisionActivity extends Activity {
         TextView mligne2 = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.ligne2Question);
         Button mBouton = (Button) findViewById(fr.marzin.jacques.revlang.R.id.boutonVerifierAutre);
         TextView mtexteReponse = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.texteReponse);
+        TextView mPrononciation = (TextView) findViewById(R.id.prononciation);
         EditText mReponse = (EditText) findViewById(fr.marzin.jacques.revlang.R.id.reponse);
         TableLayout mzoneQuestion = (TableLayout) findViewById(fr.marzin.jacques.revlang.R.id.zoneQuestion);
         imSpeaker = (ImageButton) findViewById(R.id.im_speaker);
@@ -206,6 +194,7 @@ public class RevisionActivity extends Activity {
             mligne2.setText((String) question.ligne2);
             mBouton.setText("Vérifier");
             mtexteReponse.setText("");
+            mPrononciation.setText("");
             mReponse.setText("");
         }
     }
@@ -219,6 +208,7 @@ public class RevisionActivity extends Activity {
 
         if (mBouton.getText().equals("Vérifier")) {
             TextView mtexteReponse = (TextView) findViewById(fr.marzin.jacques.revlang.R.id.texteReponse);
+            TextView mPrononciation = (TextView) findViewById(R.id.prononciation);
             String texte = question.item.langue;
 
             int nouveauPoids;
@@ -243,6 +233,7 @@ public class RevisionActivity extends Activity {
             }
             texte += " (" + nouveauPoids + ")";
             mtexteReponse.setText(eclate(texte));
+            mPrononciation.setText(question.prononciation);
             mBouton.setText("Autre question");
             if (locale != null) {
                 imSpeaker.setVisibility(View.VISIBLE);

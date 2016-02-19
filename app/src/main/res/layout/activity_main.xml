@@ -85,6 +85,21 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="@dimen/taille_drap"
+            android:id="@+id/im_portugais"
+            android:adjustViewBounds="true"
+            android:background="#00ffffff"
+            android:clickable="true"
+            android:contentDescription="@string/Portugais"
+            android:onClick="clickDrapeauPortugais"
+            android:src="@drawable/portugais"
+            android:layout_column="3"
+            android:layout_span="1"
+            android:layout_weight="1"
+            android:layout_gravity="center_horizontal" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/taille_drap"
             android:id="@+id/im_occitan"
             android:adjustViewBounds="true"
             android:background="#00ffffff"

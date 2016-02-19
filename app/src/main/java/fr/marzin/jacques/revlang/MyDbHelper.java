@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class MyDbHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 19;
+    public static final int DATABASE_VERSION = 20;
     public static final String DATABASE_NAME = "RevLangues.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
@@ -48,6 +48,7 @@ public class MyDbHelper extends SQLiteOpenHelper {
                     MotContract.MotTable.COLUMN_NAME_MOT_DIRECTEUR + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_LANGUE_ID + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_LANGUE + TEXT_TYPE + COMMA_SEP +
+                    MotContract.MotTable.COLUMN_NAME_PRONUNCIATION + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_DATE_MAJ + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_DATE_REV + TEXT_TYPE + COMMA_SEP +
                     MotContract.MotTable.COLUMN_NAME_POIDS + INTEGER_TYPE + COMMA_SEP +

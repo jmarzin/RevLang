@@ -120,8 +120,10 @@ public class searchResultsActivity extends Activity {
                 getActionBar().setIcon(R.drawable.espagnol);
             } else if (session.langue.equals("Occitan")) {
                 getActionBar().setIcon(R.drawable.occitan);
+            } else if (session.langue.equals("Portugais")) {
+                getActionBar().setIcon(R.drawable.portugais);
             } else {
-//            getActionBar().setIcon(R.drawable.esperanto);
+                getActionBar().setIcon(R.drawable.lingvo);
             }
 
             this.setTitle("Mots trouvés");

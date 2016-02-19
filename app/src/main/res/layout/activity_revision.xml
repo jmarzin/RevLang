@@ -86,6 +86,27 @@
 
         </TableRow>
 
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <Space
+                android:layout_width="20px"
+                android:layout_height="20px" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/prononciation"
+                android:id="@+id/prononciation"
+                android:inputType="textMultiLine"
+                android:layout_marginLeft="10dp"
+                android:lines="1"
+                android:maxLines="5" />
+        </TableRow>
+
     </TableLayout>
 
     <ImageButton
@@ -96,9 +117,11 @@
         android:layout_gravity="center_horizontal"
         android:longClickable="false"
         android:clickable="true"
-        android:baselineAlignBottom="false"
+        android:baselineAlignBottom="true"
         android:onClick="clickSpeaker"
-        android:visibility="gone" />
+        android:visibility="visible"
+        android:cropToPadding="true"
+        android:contentDescription="@string/boutonSpeaker" />
 
     <Button
         android:layout_width="match_parent"
