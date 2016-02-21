@@ -242,9 +242,13 @@ public class ParametrageActivity extends Activity {
     }
 
     public void onPrepareListe(View view) {
+        if(mt_poidsMin.getText().toString().isEmpty()) {mt_poidsMin.setText("0");}
         session.poidsMin = Integer.parseInt(mt_poidsMin.getText().toString());
+        if(mt_ageMin.getText().toString().isEmpty()){mt_ageMin.setText("0");}
         session.ageRev = Integer.parseInt(mt_ageMin.getText().toString());
+        if(mt_errMin.getText().toString().isEmpty()){mt_errMin.setText("0");}
         session.errMin = Integer.parseInt(mt_errMin.getText().toString());
+        if(mt_nivMax.getText().toString().isEmpty()){mt_nivMax.setText("1");}
         session.nivMax = mt_nivMax.getText().toString();
         if (mRadioVocabulaire.isChecked()) {
             session.modeRevision = "Vocabulaire";

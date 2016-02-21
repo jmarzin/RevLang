@@ -200,7 +200,7 @@ public class RevisionActivity extends Activity {
     }
 
     public void clickSpeaker(View view) {
-        ttobj.speak(question.item.langue, TextToSpeech.QUEUE_FLUSH, null);
+        ttobj.speak(eclate(question.item.langue), TextToSpeech.QUEUE_FLUSH, null);
     }
 
     public void clickBouton(View view) {
@@ -260,10 +260,27 @@ public class RevisionActivity extends Activity {
 
     private String eclate(String texte) {
         String texte_eclate;
+        String ou;
+        switch (question.item.langue_id) {
+            case "it" :  ou = "o";
+                break;
+            case "an":  ou = "or";
+                break;
+            case "es":  ou = "o";
+                break;
+            case "po":  ou = "ou";
+                break;
+            case "li":  ou = "aŭ";
+                break;
+            case "oc":  ou = "o";
+                break;
+            default: ou = "/";
+                break;
+        }
         String[] tableau = texte.split("/");
         texte_eclate = tableau[0];
         for (int i=1 ; i < tableau.length ; i++) {
-            texte_eclate += " o\n"+tableau[i];
+            texte_eclate += " "+ou+"\n"+tableau[i];
         }
         return texte_eclate;
     }
