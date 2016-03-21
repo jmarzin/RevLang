@@ -51,7 +51,7 @@
     <string name="Mixte">Mixte</string>
     <string name="invitePoidsMin">Poids minimum</string>
     <string name="inviteAgeMin">Non révisés depuis</string>
-    <string name="inviteErrMin">Avec plus de</string>
+    <string name="inviteErrMin">Avec au moins</string>
     <string name="inviteNivMax">Niveau maximum</string>
     <string name="jours">jours</string>
     <string name="erreurs">erreur(s)</string>
