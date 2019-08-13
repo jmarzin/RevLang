@@ -24,6 +24,8 @@ public class Utilitaires {
             return R.drawable.occitan;
         } else if (langue.equals("Portugais")) {
             return R.drawable.portugais;
+        } else if (langue.equals("Allemand")) {
+            return R.drawable.allemand;
         } else {
             return R.drawable.lingvo;
         }
@@ -40,6 +42,8 @@ public class Utilitaires {
             return null;
         } else if (langue.equals("Portugais")) {
             return new Locale("pt", "PT");
+        } else if (langue.equals("Allemand")) {
+            return new Locale("de", "DE");
         } else {
             return null;
         }

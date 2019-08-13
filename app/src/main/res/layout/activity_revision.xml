@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/ligne2Question"
+        android:maxEms="20"
         android:id="@+id/ligne2Question"
         style="@style/Base.TextAppearance.AppCompat.Body1"
         android:textStyle="bold"
@@ -59,8 +60,8 @@
                 android:id="@+id/reponse"
                 android:inputType="textMultiLine"
                 style="@style/Base.TextAppearance.AppCompat.Body2"
-                android:maxLines="2"
-                android:lines="2"/>
+                android:maxLines="3"
+                android:lines="3"/>
 
         </TableRow>
 
@@ -79,9 +80,10 @@
                 android:text="@string/texteReponse"
                 android:id="@+id/texteReponse"
                 android:inputType="textMultiLine"
+                android:maxEms="12"
                 style="@style/Base.TextAppearance.AppCompat.Body2"
                 android:layout_marginLeft="10dp"
-                android:lines="3"
+                android:lines="2"
                 android:maxLines="5" />
 
         </TableRow>

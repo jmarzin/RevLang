@@ -283,6 +283,13 @@ public final class FormeContract {
                     {"Participe passif présent"},
                     {"Participe passif passé"},
                     {"Participe passif futur"}});
+            put("al",  new String [][] {
+                    {"1ère pers sing. présent"},
+                    {"2ème pers sing. présent"},
+                    {"3ème pers sing. présent"},
+                    {"1ère pers plur. présent"},
+                    {"2ème pers plur. présent"},
+                    {"3ème pers plur. présent"}});
         }};
 
 

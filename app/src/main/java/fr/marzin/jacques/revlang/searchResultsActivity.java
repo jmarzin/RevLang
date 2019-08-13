@@ -122,6 +122,8 @@ public class searchResultsActivity extends Activity {
                 getActionBar().setIcon(R.drawable.occitan);
             } else if (session.langue.equals("Portugais")) {
                 getActionBar().setIcon(R.drawable.portugais);
+            } else if (session.langue.equals("Allemand")) {
+                getActionBar().setIcon(R.drawable.allemand);
             } else {
                 getActionBar().setIcon(R.drawable.lingvo);
             }

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
@@ -68,8 +69,10 @@ public class MainActivity extends Activity {
                 (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
+        searchView.setQueryHint(getResources().getString(R.string.search_hint));
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -121,6 +124,10 @@ public class MainActivity extends Activity {
 
     public void clickDrapeauLingvo(View view) {
         changeLangue(getString(fr.marzin.jacques.revlang.R.string.Lingvo));
+    }
+
+    public void clickDrapeauAllemand(View view) {
+        changeLangue(getString(fr.marzin.jacques.revlang.R.string.Allemand));
     }
 
     private boolean Oklangue() {

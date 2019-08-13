@@ -274,13 +274,14 @@ public class RevisionActivity extends Activity {
                 break;
             case "oc":  ou = "o";
                 break;
+            case "al": ou = "oder";
             default: ou = "/";
                 break;
         }
         String[] tableau = texte.split("/");
         texte_eclate = tableau[0];
         for (int i=1 ; i < tableau.length ; i++) {
-            texte_eclate += " "+ou+"\n"+tableau[i];
+            texte_eclate += " "+ou+" "+tableau[i];
         }
         return texte_eclate;
     }

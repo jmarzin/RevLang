@@ -86,5 +86,6 @@
     <string name="t_nbErreursFormes">E/F</string>
     <string name="parleAuto">Prononciation automatique</string>
     <string name="boutonSpeaker"></string>
+    <string name="Allemand">Allemand</string>
 
 </resources>
